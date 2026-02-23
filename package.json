@@ -1,0 +1,37 @@
+{
+  "name": "moss-cutter",
+  "version": "1.0.0",
+  "description": "MossCutter - Intelligent Image Grid Cutting Tool by SOSOMOSS LTD. Cut images into grids (9-grid, 4-grid, etc.) and download as ZIP",
+  "main": "index.html",
+  "scripts": {
+    "start": "python start_server.py",
+    "dev": "npx http-server -p 8000",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "image-processing",
+    "grid-cutter",
+    "image-splitter",
+    "9-grid",
+    "image-tool",
+    "web-tool",
+    "sosomoss",
+    "moss-tools"
+  ],
+  "author": "SOSOMOSS LTD.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sosomoss/moss-cutter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sosomoss/moss-cutter/issues"
+  },
+  "homepage": "https://github.com/sosomoss/moss-cutter#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

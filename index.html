@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MossCutter - 图片网格切割工具</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-cut"></i> MossCutter - 图片网格切割工具</h1>
+            <p class="subtitle">由 SOSOMOSS LTD. 开发 | 上传图片，选择网格大小，一键切割并打包下载</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>点击或拖拽上传图片</h3>
+                    <p>支持 JPG、PNG、GIF、WebP 格式</p>
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                    <button class="btn btn-primary" id="selectFileBtn">
+                        <i class="fas fa-folder-open"></i> 选择图片
+                    </button>
+                </div>
+                
+                <div class="preview-section" id="previewSection" style="display: none;">
+                    <h3><i class="fas fa-image"></i> 图片预览</h3>
+                    <div class="preview-container">
+                        <canvas id="previewCanvas"></canvas>
+                        <div class="grid-overlay" id="gridOverlay"></div>
+                    </div>
+                    <div class="image-info">
+                        <p id="imageInfo">尺寸: -- × -- | 格式: --</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="grid-controls">
+                    <h3><i class="fas fa-th"></i> 网格设置</h3>
+                    <div class="grid-inputs">
+                        <div class="input-group">
+                            <label for="rows"><i class="fas fa-arrows-alt-v"></i> 行数</label>
+                            <input type="number" id="rows" min="1" max="10" value="3">
+                        </div>
+                        <div class="input-group">
+                            <label for="cols"><i class="fas fa-arrows-alt-h"></i> 列数</label>
+                            <input type="number" id="cols" min="1" max="10" value="3">
+                        </div>
+                    </div>
+                    <div class="preset-buttons">
+                        <button class="btn btn-outline" data-rows="2" data-cols="2">2×2 (四宫格)</button>
+                        <button class="btn btn-outline" data-rows="3" data-cols="3">3×3 (九宫格)</button>
+                        <button class="btn btn-outline" data-rows="4" data-cols="4">4×4 (十六宫格)</button>
+                        <button class="btn btn-outline" data-rows="3" data-cols="4">3×4 (十二宫格)</button>
+                    </div>
+                </div>
+
+                <div class="output-controls">
+                    <h3><i class="fas fa-download"></i> 输出设置</h3>
+                    <div class="input-group">
+                        <label for="fileName"><i class="fas fa-file-archive"></i> 压缩包名称</label>
+                        <input type="text" id="fileName" value="cut_images">
+                    </div>
+                    <div class="input-group">
+                        <label for="imageFormat"><i class="fas fa-file-image"></i> 输出格式</label>
+                        <select id="imageFormat">
+                            <option value="png">PNG (无损)</option>
+                            <option value="jpeg">JPEG (有损)</option>
+                            <option value="webp">WebP (现代)</option>
+                        </select>
+                    </div>
+                    <div class="quality-control" id="qualityControl" style="display: none;">
+                        <label for="quality"><i class="fas fa-compress-alt"></i> 质量: <span id="qualityValue">85</span>%</label>
+                        <input type="range" id="quality" min="1" max="100" value="85">
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-section">
+                <button class="btn btn-success btn-large" id="cutBtn" disabled>
+                    <i class="fas fa-cut"></i> 开始切割图片
+                </button>
+                <button class="btn btn-secondary btn-large" id="resetBtn">
+                    <i class="fas fa-redo"></i> 重置
+                </button>
+            </div>
+
+            <div class="progress-section" id="progressSection" style="display: none;">
+                <h3><i class="fas fa-spinner fa-spin"></i> 处理中...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p id="progressText">准备中...</p>
+            </div>
+
+            <div class="result-section" id="resultSection" style="display: none;">
+                <h3><i class="fas fa-check-circle"></i> 切割完成！</h3>
+                <div class="grid-preview" id="gridPreview"></div>
+                <button class="btn btn-primary btn-large" id="downloadBtn">
+                    <i class="fas fa-file-archive"></i> 下载 ZIP 压缩包
+                </button>
+                <p class="download-info">包含 <span id="pieceCount">0</span> 张图片片段</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2026 MossCutter by SOSOMOSS LTD. | 使用 HTML5 Canvas 和 JSZip 构建</p>
+            <p class="brand">
+                <i class="fas fa-code-branch"></i> MossTools 系列 - 更多实用工具即将发布
+            </p>
+            <p class="tips">
+                <i class="fas fa-lightbulb"></i> 提示：切割后的图片适合用于社交媒体拼图、创意设计等
+            </p>
+        </footer>
+    </div>
+
+    <!-- 引入必要的库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

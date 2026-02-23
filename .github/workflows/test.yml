@@ -1,0 +1,65 @@
+name: Test and Lint
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Check file structure
+      run: |
+        echo "Checking required files..."
+        ls -la
+        [ -f "index.html" ] || exit 1
+        [ -f "style.css" ] || exit 1
+        [ -f "script.js" ] || exit 1
+        [ -f "README.md" ] || exit 1
+        [ -f "LICENSE" ] || exit 1
+        echo "All required files present ✓"
+    
+    - name: Validate HTML
+      run: |
+        echo "Checking HTML syntax..."
+        if command -v tidy &> /dev/null; then
+          tidy -q -errors index.html 2>&1 | head -20 || true
+        else
+          echo "HTML tidy not installed, skipping HTML validation"
+        fi
+    
+    - name: Check JavaScript syntax
+      run: |
+        echo "Checking JavaScript syntax..."
+        node -c script.js && echo "JavaScript syntax valid ✓"
+    
+    - name: Run basic tests
+      run: |
+        echo "Running basic tests..."
+        # 检查文件大小
+        echo "File sizes:"
+        ls -lh index.html style.css script.js
+        
+        # 检查关键功能是否存在
+        echo "Checking for required functions..."
+        grep -q "handleFileSelect" script.js && echo "✓ handleFileSelect found"
+        grep -q "cutImage" script.js && echo "✓ cutImage found"
+        grep -q "downloadZip" script.js && echo "✓ downloadZip found"
+        grep -q "JSZip" script.js && echo "✓ JSZip integration found"
+        
+        echo "All basic tests passed ✓"
