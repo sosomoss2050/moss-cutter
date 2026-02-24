@@ -6,6 +6,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Version](https://img.shields.io/badge/version-1.2.0-orange)
 ![Stable](https://img.shields.io/badge/稳定版-✅-brightgreen)
+![GitHub Release](https://img.shields.io/github/v/release/sosomoss2050/moss-cutter?label=GitHub%20Release)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 
 **智能图片网格切割工具 | 由 SOSOMOSS AI 开发**
@@ -353,3 +354,24 @@ image-grid-cutter/
 - ZIP打包下载
 - 响应式设计
 - 键盘快捷键支持
+
+## 📦 GitHub Release
+
+**v1.2.0 稳定版已发布**：
+- 🔗 **Release页面**: [https://github.com/sosomoss2050/moss-cutter/releases/tag/v1.2.0](https://github.com/sosomoss2050/moss-cutter/releases/tag/v1.2.0)
+- 🎯 **稳定版本**: 功能完整，设计统一，经过充分测试
+- 📝 **发布说明**: 包含完整的版本更新内容和特性说明
+- 🚀 **在线使用**: [https://sosomoss2050.github.io/moss-cutter/](https://sosomoss2050.github.io/moss-cutter/)
+
+### 获取最新版本
+```bash
+# 克隆仓库
+git clone https://github.com/sosomoss2050/moss-cutter.git
+
+# 切换到稳定版本
+git checkout v1.2.0
+```
+
+### 直接下载
+- **ZIP包**: [下载 v1.2.0 ZIP](https://github.com/sosomoss2050/moss-cutter/archive/refs/tags/v1.2.0.zip)
+- **tar.gz包**: [下载 v1.2.0 tar.gz](https://github.com/sosomoss2050/moss-cutter/archive/refs/tags/v1.2.0.tar.gz)
