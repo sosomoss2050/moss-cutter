@@ -273,15 +273,21 @@ header h1 i {
 /* Logo图标样式 */
 .logo-icon {
     display: inline-block;
-    margin-right: 10px;
-    font-size: 1.8rem;
+    margin-right: 12px;
     vertical-align: middle;
-    background: linear-gradient(135deg, #4f46e5, #8b5cf6);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     animation: logoPulse 3s infinite;
+}
+
+.logo-svg {
+    width: 48px;
+    height: 48px;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    transition: transform 0.3s ease;
+}
+
+.logo-svg:hover {
+    transform: scale(1.1) rotate(5deg);
 }
 
 @keyframes logoPulse {

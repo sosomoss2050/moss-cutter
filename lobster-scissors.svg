@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48" height="48">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.2)" />
+    </filter>
+  </defs>
+  
+  <!-- 背景圆形 -->
+  <circle cx="50" cy="50" r="45" fill="url(#logoGradient)" filter="url(#shadow)" />
+  
+  <!-- 小龙虾身体 -->
+  <ellipse cx="50" cy="55" rx="20" ry="15" fill="#a78bfa" />
+  
+  <!-- 头部 -->
+  <ellipse cx="50" cy="45" rx="15" ry="10" fill="#a78bfa" />
+  
+  <!-- 眼睛 -->
+  <circle cx="45" cy="43" r="3" fill="#ffffff" />
+  <circle cx="55" cy="43" r="3" fill="#ffffff" />
+  
+  <!-- 眼珠 -->
+  <circle cx="45" cy="43" r="1" fill="#000000" />
+  <circle cx="55" cy="43" r="1" fill="#000000" />
+  
+  <!-- 左钳子（举起来） -->
+  <path d="M30,50 Q25,40 20,45 Q25,50 30,50" fill="#8b5cf6" />
+  
+  <!-- 右钳子（拿着剪刀） -->
+  <path d="M70,50 Q75,40 80,45 Q75,50 70,50" fill="#8b5cf6" />
+  
+  <!-- 剪刀（在右钳子上） -->
+  <g transform="translate(75,42) rotate(45)">
+    <!-- 剪刀手柄 -->
+    <rect x="-8" y="-2" width="16" height="4" rx="2" fill="#ffffff" />
+    
+    <!-- 剪刀刀片 -->
+    <path d="M-6,-6 L0,0 L-6,6" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" />
+    <path d="M6,-6 L0,0 L6,6" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" />
+    
+    <!-- 剪刀转轴 -->
+    <circle cx="0" cy="0" r="2" fill="#4f46e5" />
+  </g>
+  
+  <!-- 网格元素（被剪切） -->
+  <g transform="translate(25,25)">
+    <!-- 网格外框 -->
+    <rect x="0" y="0" width="20" height="15" rx="2" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.6)" stroke-width="1" />
+    
+    <!-- 网格线 -->
+    <line x1="0" y1="5" x2="20" y2="5" stroke="rgba(255,255,255,0.8)" stroke-width="1" />
+    <line x1="0" y1="10" x2="20" y2="10" stroke="rgba(255,255,255,0.8)" stroke-width="1" />
+    <line x1="5" y1="0" x2="5" y2="15" stroke="rgba(255,255,255,0.8)" stroke-width="1" />
+    <line x1="10" y1="0" x2="10" y2="15" stroke="rgba(255,255,255,0.8)" stroke-width="1" />
+    <line x1="15" y1="0" x2="15" y2="15" stroke="rgba(255,255,255,0.8)" stroke-width="1" />
+  </g>
+</svg>
