@@ -253,25 +253,21 @@ header h1 i {
     line-height: 1.6;
 }
 
-.hint-text {
-    color: var(--primary-color);
-    font-weight: 600;
-    background: rgba(99, 102, 241, 0.1);
-    padding: 2px 8px;
-    border-radius: var(--radius-sm);
+/* 简洁的点击提示 - 只在悬停时显示 */
+.upload-area:hover p::after {
+    content: "💡 整个区域都可点击";
+    display: block;
     font-size: 0.85rem;
-    display: inline-block;
-    margin-left: 4px;
-    animation: hintPulse 2s infinite;
+    color: var(--primary-color);
+    margin-top: 4px;
+    font-weight: 500;
+    opacity: 0.8;
+    animation: fadeIn 0.3s ease;
 }
 
-@keyframes hintPulse {
-    0%, 100% {
-        background: rgba(99, 102, 241, 0.1);
-    }
-    50% {
-        background: rgba(99, 102, 241, 0.2);
-    }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 0.8; transform: translateY(0); }
 }
 }
 
