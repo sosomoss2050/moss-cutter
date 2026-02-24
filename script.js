@@ -27,7 +27,6 @@ const modeDescription = document.getElementById('modeDescription');
 const toggleAdvancedBtn = document.getElementById('toggleAdvanced');
 const simpleMode = document.getElementById('simpleMode');
 const advancedMode = document.getElementById('advancedMode');
-const presetButtons = document.querySelectorAll('.preset-buttons .btn');
 const smartRecommendation = document.getElementById('smartRecommendation');
 const recommendationDetails = document.getElementById('recommendationDetails');
 const cutBtn = document.getElementById('cutBtn');
