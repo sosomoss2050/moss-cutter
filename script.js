@@ -269,6 +269,14 @@ async function cutImage() {
     gridPreview.style.gridTemplateColumns = `repeat(${previewGridSize}, 1fr)`;
     gridPreview.style.gridTemplateRows = `repeat(${previewGridSize}, 1fr)`;
     
+    // 清空预览网格
+    const previewGrid = document.getElementById('previewGrid');
+    previewGrid.innerHTML = '';
+    
+    // 存储所有切片的Blob数据
+    window.pieceBlobs = [];
+    window.pieceInfo = [];
+    
     // 切割每个单元格
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
@@ -307,6 +315,16 @@ async function cutImage() {
             const fileName = `piece_${row + 1}_${col + 1}.${format}`;
             zip.file(fileName, blob);
             
+            // 保存Blob数据用于预览
+            window.pieceBlobs.push(blob);
+            window.pieceInfo.push({
+                row: row + 1,
+                col: col + 1,
+                index: pieceIndex,
+                fileName: fileName,
+                format: format
+            });
+            
             // 添加到预览（只显示前几个）
             if (pieceIndex < previewGridSize * previewGridSize) {
                 const img = document.createElement('img');
@@ -327,6 +345,9 @@ async function cutImage() {
     
     // 保存ZIP引用
     window.currentZip = zip;
+    
+    // 生成预览网格
+    generatePreviewGrid();
     
     // 显示结果
     setTimeout(() => {
@@ -469,3 +490,293 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// ===== v1.1.0 新增功能：预览网格 =====
+
+// 生成预览网格
+function generatePreviewGrid() {
+    const previewGrid = document.getElementById('previewGrid');
+    previewGrid.innerHTML = '';
+    
+    const rows = parseInt(rowsInput.value);
+    const cols = parseInt(colsInput.value);
+    const totalPieces = rows * cols;
+    
+    // 设置网格列数
+    const gridCols = Math.min(cols, 6); // 最多显示6列
+    previewGrid.className = `preview-grid grid-size-${gridCols}`;
+    
+    // 设置预览项大小
+    let previewSize = 'preview-size-medium';
+    if (totalPieces > 20) previewSize = 'preview-size-small';
+    if (totalPieces <= 9) previewSize = 'preview-size-large';
+    
+    // 生成每个预览项
+    for (let i = 0; i < totalPieces; i++) {
+        const piece = window.pieceInfo[i];
+        const blob = window.pieceBlobs[i];
+        const blobUrl = URL.createObjectURL(blob);
+        
+        // 创建预览项
+        const previewItem = document.createElement('div');
+        previewItem.className = `preview-item ${previewSize}`;
+        previewItem.dataset.index = i;
+        
+        // 创建复选框
+        const checkbox = document.createElement('div');
+        checkbox.className = 'preview-checkbox';
+        checkbox.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSelectPiece(i);
+        });
+        
+        // 创建图片
+        const img = document.createElement('img');
+        img.src = blobUrl;
+        img.alt = `片段 ${piece.row}-${piece.col}`;
+        img.loading = 'lazy';
+        
+        // 创建信息覆盖层
+        const infoOverlay = document.createElement('div');
+        infoOverlay.className = 'preview-info-overlay';
+        
+        const indexSpan = document.createElement('span');
+        indexSpan.className = 'preview-index';
+        indexSpan.textContent = `#${i + 1} (${piece.row},${piece.col})`;
+        
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'preview-download-btn';
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i> 下载';
+        downloadBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            downloadSinglePiece(i);
+        });
+        
+        infoOverlay.appendChild(indexSpan);
+        infoOverlay.appendChild(downloadBtn);
+        
+        // 组装预览项
+        previewItem.appendChild(checkbox);
+        previewItem.appendChild(img);
+        previewItem.appendChild(infoOverlay);
+        
+        // 点击预览项切换选择
+        previewItem.addEventListener('click', (e) => {
+            if (e.target === checkbox || e.target === downloadBtn) return;
+            toggleSelectPiece(i);
+        });
+        
+        previewGrid.appendChild(previewItem);
+    }
+    
+    // 初始化选择状态
+    window.selectedPieces = new Set();
+    
+    // 绑定控制按钮事件
+    bindPreviewControls();
+}
+
+// 切换选择单个片段
+function toggleSelectPiece(index) {
+    const previewItem = document.querySelector(`.preview-item[data-index="${index}"]`);
+    const checkbox = previewItem.querySelector('.preview-checkbox');
+    
+    if (window.selectedPieces.has(index)) {
+        window.selectedPieces.delete(index);
+        previewItem.classList.remove('selected');
+        checkbox.classList.remove('checked');
+    } else {
+        window.selectedPieces.add(index);
+        previewItem.classList.add('selected');
+        checkbox.classList.add('checked');
+    }
+    
+    updateSelectedCount();
+}
+
+// 更新选中数量显示
+function updateSelectedCount() {
+    const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
+    const count = window.selectedPieces.size;
+    
+    if (count > 0) {
+        downloadSelectedBtn.innerHTML = `<i class="fas fa-download"></i> 下载选中 (${count})`;
+        downloadSelectedBtn.disabled = false;
+    } else {
+        downloadSelectedBtn.innerHTML = `<i class="fas fa-download"></i> 下载选中`;
+        downloadSelectedBtn.disabled = true;
+    }
+}
+
+// 绑定预览控制按钮事件
+function bindPreviewControls() {
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const deselectAllBtn = document.getElementById('deselectAllBtn');
+    const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
+    
+    if (!selectAllBtn || !deselectAllBtn || !downloadSelectedBtn) return;
+    
+    // 全选
+    selectAllBtn.addEventListener('click', () => {
+        const totalPieces = window.pieceInfo.length;
+        for (let i = 0; i < totalPieces; i++) {
+            if (!window.selectedPieces.has(i)) {
+                toggleSelectPiece(i);
+            }
+        }
+    });
+    
+    // 取消全选
+    deselectAllBtn.addEventListener('click', () => {
+        window.selectedPieces.forEach(index => {
+            toggleSelectPiece(index);
+        });
+    });
+    
+    // 下载选中
+    downloadSelectedBtn.addEventListener('click', downloadSelectedPieces);
+}
+
+// 下载单个片段
+function downloadSinglePiece(index) {
+    const piece = window.pieceInfo[index];
+    const blob = window.pieceBlobs[index];
+    
+    const fileName = piece.fileName;
+    saveAs(blob, fileName);
+    
+    // 显示下载反馈
+    showDownloadFeedback(`已下载: ${fileName}`);
+}
+
+// 下载选中片段
+async function downloadSelectedPieces() {
+    if (window.selectedPieces.size === 0) return;
+    
+    const selectedIndices = Array.from(window.selectedPieces);
+    
+    if (selectedIndices.length === 1) {
+        // 单个文件直接下载
+        downloadSinglePiece(selectedIndices[0]);
+        return;
+    }
+    
+    // 多个文件打包下载
+    updateProgress(0, '正在打包选中文件...');
+    document.getElementById('progressSection').style.display = 'block';
+    
+    try {
+        const zip = new JSZip();
+        let processed = 0;
+        
+        for (const index of selectedIndices) {
+            const piece = window.pieceInfo[index];
+            const blob = window.pieceBlobs[index];
+            
+            zip.file(piece.fileName, blob);
+            
+            processed++;
+            const percent = Math.round((processed / selectedIndices.length) * 100);
+            updateProgress(percent, `打包中: ${processed}/${selectedIndices.length}`);
+            
+            // 小延迟避免阻塞
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+        
+        // 生成ZIP
+        const content = await zip.generateAsync({
+            type: 'blob',
+            compression: 'DEFLATE',
+            compressionOptions: { level: 6 }
+        });
+        
+        // 保存文件
+        const zipName = `selected_pieces_${Date.now()}.zip`;
+        saveAs(content, zipName);
+        
+        updateProgress(100, '下载完成！');
+        showDownloadFeedback(`已下载 ${selectedIndices.length} 个文件`);
+        
+        setTimeout(() => {
+            document.getElementById('progressSection').style.display = 'none';
+        }, 1000);
+        
+    } catch (error) {
+        console.error('下载失败:', error);
+        alert('下载失败，请重试');
+        document.getElementById('progressSection').style.display = 'none';
+    }
+}
+
+// 显示下载反馈
+function showDownloadFeedback(message) {
+    // 创建反馈元素
+    let feedback = document.getElementById('downloadFeedback');
+    if (!feedback) {
+        feedback = document.createElement('div');
+        feedback.id = 'downloadFeedback';
+        feedback.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            font-weight: 600;
+            animation: slideIn 0.3s ease;
+        `;
+        document.body.appendChild(feedback);
+        
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    feedback.textContent = message;
+    feedback.style.display = 'block';
+    
+    // 3秒后自动隐藏
+    setTimeout(() => {
+        feedback.style.animation = 'fadeOut 0.5s ease';
+        setTimeout(() => {
+            feedback.style.display = 'none';
+            feedback.style.animation = '';
+        }, 500);
+    }, 3000);
+}
+
+// 重置时清理预览数据
+function resetPreviewData() {
+    if (window.pieceBlobs) {
+        window.pieceBlobs.forEach(blob => {
+            URL.revokeObjectURL(blob);
+        });
+    }
+    
+    window.pieceBlobs = [];
+    window.pieceInfo = [];
+    window.selectedPieces = new Set();
+    
+    const previewGrid = document.getElementById('previewGrid');
+    if (previewGrid) previewGrid.innerHTML = '';
+}
+
+// 修改原有的重置函数
+const originalResetTool = resetTool;
+resetTool = function() {
+    originalResetTool();
+    resetPreviewData();
+};

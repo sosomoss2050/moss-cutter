@@ -436,3 +436,183 @@ footer {
     background: rgba(102, 126, 234, 0.1);
     pointer-events: none;
 }
+
+/* ===== v1.1.0 新增样式：预览网格功能 ===== */
+
+/* 预览控制区域 */
+.preview-controls {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid #e9ecef;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.preview-info {
+    color: #6c757d;
+    font-size: 0.95rem;
+    margin: 0;
+    text-align: center;
+}
+
+/* 预览网格容器 */
+.preview-grid-container {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.preview-grid {
+    display: grid;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* 预览项样式 */
+.preview-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    background: #f8f9fa;
+}
+
+.preview-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.preview-item.selected {
+    border-color: #48bb78;
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 预览项信息 */
+.preview-info-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preview-index {
+    font-weight: 600;
+}
+
+.preview-download-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.preview-download-btn:hover {
+    background: #5a67d8;
+}
+
+/* 选择复选框 */
+.preview-checkbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 4px;
+    border: 2px solid #667eea;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-checkbox.checked {
+    background: #48bb78;
+    border-color: #48bb78;
+}
+
+.preview-checkbox.checked::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ZIP下载区域 */
+.zip-download-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .preview-actions {
+        flex-direction: column;
+    }
+    
+    .preview-actions .btn {
+        width: 100%;
+    }
+    
+    .preview-grid {
+        gap: 10px;
+    }
+    
+    .preview-info-overlay {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+    }
+}
+
+/* 网格尺寸配置 */
+.grid-size-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-size-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-size-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-size-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-size-5 { grid-template-columns: repeat(5, 1fr); }
+.grid-size-6 { grid-template-columns: repeat(6, 1fr); }
+.grid-size-7 { grid-template-columns: repeat(7, 1fr); }
+.grid-size-8 { grid-template-columns: repeat(8, 1fr); }
+.grid-size-9 { grid-template-columns: repeat(9, 1fr); }
+.grid-size-10 { grid-template-columns: repeat(10, 1fr); }
+
+/* 预览项尺寸配置 */
+.preview-size-small { max-width: 120px; }
+.preview-size-medium { max-width: 150px; }
+.preview-size-large { max-width: 200px; }
