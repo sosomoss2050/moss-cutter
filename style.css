@@ -1110,29 +1110,6 @@ footer p {
 
 /* ===== v1.1.0 新增样式：预览网格功能 ===== */
 
-/* 预览控制区域 */
-.preview-controls {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 25px;
-    border: 1px solid #e9ecef;
-}
-
-.preview-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-}
-
-.preview-info {
-    color: #6c757d;
-    font-size: 0.95rem;
-    margin: 0;
-    text-align: center;
-}
-
 /* 预览网格容器 */
    动画效果与微交互
    ============================================ */
@@ -1286,16 +1263,6 @@ footer p {
     right: 0;
     height: 4px;
     background: linear-gradient(90deg, var(--info-color), var(--primary-color));
-}
-
-/* 优化预览控制区域 */
-.preview-controls {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(59, 130, 246, 0.05));
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    margin-bottom: 24px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
 }
 
 /* 优化预览网格容器 */
