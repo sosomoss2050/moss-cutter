@@ -152,11 +152,64 @@ function loadImage(file) {
             originalImage = img;
             displayImage(img);
             cutBtn.disabled = false;
+            
+            // 重要修复：上传新图片时重置结果区域
+            resetResultSection();
         };
         img.src = e.target.result;
     };
     
     reader.readAsDataURL(file);
+}
+
+// 重置结果区域
+function resetResultSection() {
+    // 隐藏结果区域
+    resultSection.style.display = 'none';
+    
+    // 重置预览网格
+    const previewGrid = document.getElementById('previewGrid');
+    if (previewGrid) {
+        previewGrid.innerHTML = '';
+    }
+    
+    // 重置网格预览
+    if (gridPreview) {
+        gridPreview.innerHTML = '';
+    }
+    
+    // 重置切片计数
+    if (pieceCount) {
+        pieceCount.textContent = '0';
+    }
+    
+    // 重置下载按钮
+    if (downloadBtn) {
+        downloadBtn.disabled = true;
+    }
+    
+    // 重置切片选择按钮
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const deselectAllBtn = document.getElementById('deselectAllBtn');
+    const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
+    
+    if (selectAllBtn) selectAllBtn.disabled = true;
+    if (deselectAllBtn) deselectAllBtn.disabled = true;
+    if (downloadSelectedBtn) downloadSelectedBtn.disabled = true;
+    
+    // 清空切片数据
+    if (window.pieceBlobs) {
+        window.pieceBlobs.forEach(blob => {
+            URL.revokeObjectURL(blob);
+        });
+    }
+    
+    window.pieceBlobs = [];
+    window.pieceInfo = [];
+    window.selectedPieces = new Set();
+    
+    // 清空ZIP引用
+    window.currentZip = null;
 }
 
 // 显示图片
@@ -376,6 +429,9 @@ function drawGrid() {
 // 切割图片
 async function cutImage() {
     if (!originalImage) return;
+    
+    // 重要修复：开始切割前重置结果区域
+    resetResultSection();
     
     // 显示进度
     progressSection.style.display = 'block';
@@ -1083,8 +1139,8 @@ function resetTool() {
     imageFormatSelect.value = 'png';
     qualityControl.style.display = 'none';
     
-    // 清空ZIP引用
-    window.currentZip = null;
+    // 重置结果区域
+    resetResultSection();
 }
 
 // 生成默认ZIP文件名：MossCutYYYYMMDDXXX
