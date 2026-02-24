@@ -274,22 +274,28 @@ async function cutImage() {
     
     let colWidths, rowHeights, colStarts, rowStarts;
     let lostPixels = { width: 0, height: 0 };
+    let fillPixels = { left: 0, right: 0, top: 0, bottom: 0, totalWidth: 0, totalHeight: 0 };
     
     if (mode === 'exact') {
         // 模式1：精确像素模式（不丢失任何像素）
         ({ colWidths, rowHeights, colStarts, rowStarts } = calculateExactCut(
             originalImage.width, originalImage.height, rows, cols
         ));
-    } else {
+    } else if (mode === 'uniform') {
         // 模式2：均匀切割模式（保持宽高比）
         ({ colWidths, rowHeights, colStarts, rowStarts, lostPixels } = calculateUniformCut(
+            originalImage.width, originalImage.height, rows, cols
+        ));
+    } else {
+        // 模式3：填充模式（添加白边，保持宽高比，不丢失像素）
+        ({ colWidths, rowHeights, colStarts, rowStarts, fillPixels } = calculateFillCut(
             originalImage.width, originalImage.height, rows, cols
         ));
     }
     
     // 显示切割信息
     displayCutInfo(mode, originalImage.width, originalImage.height, rows, cols, 
-                   colWidths, rowHeights, lostPixels);
+                   colWidths, rowHeights, lostPixels, fillPixels);
     
     // 创建 ZIP
     const zip = new JSZip();
@@ -329,17 +335,44 @@ async function cutImage() {
             pieceCanvas.height = currentCellHeight;
             const pieceCtx = pieceCanvas.getContext('2d');
             
-            // 从源画布复制区域
-            pieceCtx.drawImage(
-                sourceCanvas,
-                startX,               // 源x
-                startY,               // 源y
-                currentCellWidth,     // 源宽度
-                currentCellHeight,    // 源高度
-                0, 0,                 // 目标x,y
-                currentCellWidth,     // 目标宽度
-                currentCellHeight     // 目标高度
-            );
+            if (mode === 'fill') {
+                // 填充模式：先填充白色背景
+                pieceCtx.fillStyle = 'white';
+                pieceCtx.fillRect(0, 0, currentCellWidth, currentCellHeight);
+                
+                // 计算实际图片区域（排除填充）
+                const imageStartX = Math.max(0, -startX);
+                const imageStartY = Math.max(0, -startY);
+                const imageWidth = Math.min(currentCellWidth, sourceCanvas.width - startX);
+                const imageHeight = Math.min(currentCellHeight, sourceCanvas.height - startY);
+                
+                // 只绘制图片部分（如果有）
+                if (imageWidth > 0 && imageHeight > 0) {
+                    pieceCtx.drawImage(
+                        sourceCanvas,
+                        Math.max(0, startX),      // 源x
+                        Math.max(0, startY),      // 源y
+                        imageWidth,               // 源宽度
+                        imageHeight,              // 源高度
+                        imageStartX,              // 目标x
+                        imageStartY,              // 目标y
+                        imageWidth,               // 目标宽度
+                        imageHeight               // 目标高度
+                    );
+                }
+            } else {
+                // 精确模式和均匀模式：直接复制区域
+                pieceCtx.drawImage(
+                    sourceCanvas,
+                    startX,               // 源x
+                    startY,               // 源y
+                    currentCellWidth,     // 源宽度
+                    currentCellHeight,    // 源高度
+                    0, 0,                 // 目标x,y
+                    currentCellWidth,     // 目标宽度
+                    currentCellHeight     // 目标高度
+                );
+            }
             
             // 转换为Blob
             const blob = await new Promise(resolve => {
@@ -586,8 +619,10 @@ function updateModeDescription() {
     const mode = cuttingModeSelect.value;
     let description = '';
     
-    if (mode === 'uniform') {
-        description = '均匀切割：每个小图片宽高比一致，网格均匀，适合拼图设计';
+    if (mode === 'fill') {
+        description = '填充模式：添加白边保持宽高比一致，不丢失任何像素，推荐使用';
+    } else if (mode === 'uniform') {
+        description = '均匀切割：每个小图片宽高比一致，网格均匀，可能丢失少量边缘像素';
     } else {
         description = '精确像素：不丢失任何像素，但宽高比可能不一致，适合精确处理';
     }
@@ -688,8 +723,66 @@ function calculateUniformCut(width, height, rows, cols) {
     };
 }
 
+// 计算填充模式（添加白边，保持宽高比，不丢失像素）
+function calculateFillCut(width, height, rows, cols) {
+    // 计算基础单元格尺寸（向下取整）
+    const baseCellWidth = Math.floor(width / cols);
+    const baseCellHeight = Math.floor(height / rows);
+    
+    // 计算需要填充的空白
+    const totalUsedWidth = baseCellWidth * cols;
+    const totalUsedHeight = baseCellHeight * rows;
+    const fillWidth = width - totalUsedWidth;
+    const fillHeight = height - totalUsedHeight;
+    
+    // 计算填充分布（均匀分配到边缘）
+    const leftFill = Math.floor(fillWidth / 2);
+    const rightFill = fillWidth - leftFill;
+    const topFill = Math.floor(fillHeight / 2);
+    const bottomFill = fillHeight - topFill;
+    
+    // 所有单元格尺寸相同（包含填充区域）
+    const colWidths = Array(cols).fill(baseCellWidth);
+    const rowHeights = Array(rows).fill(baseCellHeight);
+    
+    // 计算起始位置（考虑填充）
+    const colStarts = [];
+    const rowStarts = [];
+    
+    // 列起始位置（左边有填充）
+    let currentX = leftFill;
+    for (let col = 0; col < cols; col++) {
+        colStarts[col] = currentX;
+        currentX += baseCellWidth;
+    }
+    
+    // 行起始位置（上边有填充）
+    let currentY = topFill;
+    for (let row = 0; row < rows; row++) {
+        rowStarts[row] = currentY;
+        currentY += baseCellHeight;
+    }
+    
+    return { 
+        colWidths, 
+        rowHeights, 
+        colStarts, 
+        rowStarts,
+        fillPixels: { 
+            left: leftFill, 
+            right: rightFill, 
+            top: topFill, 
+            bottom: bottomFill,
+            totalWidth: fillWidth,
+            totalHeight: fillHeight
+        }
+    };
+}
+
 // 显示切割信息
-function displayCutInfo(mode, width, height, rows, cols, colWidths, rowHeights, lostPixels = { width: 0, height: 0 }) {
+function displayCutInfo(mode, width, height, rows, cols, colWidths, rowHeights, 
+                       lostPixels = { width: 0, height: 0 }, 
+                       fillPixels = { left: 0, right: 0, top: 0, bottom: 0, totalWidth: 0, totalHeight: 0 }) {
     const cutInfo = document.getElementById('cutInfo');
     if (!cutInfo) return;
     
@@ -715,7 +808,7 @@ function displayCutInfo(mode, width, height, rows, cols, colWidths, rowHeights, 
                 </div>
             </div>
         `;
-    } else {
+    } else if (mode === 'uniform') {
         infoHTML = `
             <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1)); 
                         padding: 16px; border-radius: 12px; border-left: 4px solid #10b981; margin-bottom: 20px;">
@@ -734,18 +827,48 @@ function displayCutInfo(mode, width, height, rows, cols, colWidths, rowHeights, 
                 </div>
             </div>
         `;
+    } else {
+        // 填充模式
+        const hasFill = fillPixels.totalWidth > 0 || fillPixels.totalHeight > 0;
+        const fillInfo = hasFill ? 
+            `• 填充白边: 左${fillPixels.left}px, 右${fillPixels.right}px, 上${fillPixels.top}px, 下${fillPixels.bottom}px<br>` : 
+            '• <span style="color: #10b981;">完美匹配，无需填充</span><br>';
+        
+        infoHTML = `
+            <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1)); 
+                        padding: 16px; border-radius: 12px; border-left: 4px solid #f59e0b; margin-bottom: 20px;">
+                <strong style="display: block; margin-bottom: 8px; color: #92400e;">
+                    <i class="fas fa-border-style"></i> 填充模式（推荐）
+                </strong>
+                <div style="font-size: 0.95rem; line-height: 1.6;">
+                    • 图片尺寸: <strong>${width} × ${height}</strong><br>
+                    • 网格: <strong>${rows} × ${cols}</strong><br>
+                    • 单元格尺寸: <strong>${colWidths[0]} × ${rowHeights[0]}</strong> (所有单元格相同)<br>
+                    ${fillInfo}
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 不丢失任何像素</span><br>
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 所有单元格宽高比一致</span><br>
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 网格均匀分布</span><br>
+                    • <span style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> 边缘可能添加白边</span>
+                </div>
+            </div>
+        `;
     }
     
     cutInfo.innerHTML = infoHTML;
     
     // 控制台输出
-    console.log(`切割模式: ${mode === 'exact' ? '精确像素' : '均匀切割'}`);
+    console.log(`切割模式: ${mode === 'exact' ? '精确像素' : mode === 'uniform' ? '均匀切割' : '填充模式'}`);
     console.log(`图片尺寸: ${width} × ${height}`);
     console.log(`网格: ${rows} × ${cols}`);
     console.log(`列宽度分布: [${colWidths.join(', ')}]`);
     console.log(`行高度分布: [${rowHeights.join(', ')}]`);
-    if (lostPixels.width > 0 || lostPixels.height > 0) {
+    
+    if (mode === 'uniform' && (lostPixels.width > 0 || lostPixels.height > 0)) {
         console.log(`丢失像素: 宽度 ${lostPixels.width}px, 高度 ${lostPixels.height}px`);
+    }
+    
+    if (mode === 'fill' && (fillPixels.totalWidth > 0 || fillPixels.totalHeight > 0)) {
+        console.log(`填充白边: 左${fillPixels.left}px, 右${fillPixels.right}px, 上${fillPixels.top}px, 下${fillPixels.bottom}px`);
     }
 }
 
