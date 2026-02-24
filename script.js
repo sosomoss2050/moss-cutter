@@ -1189,7 +1189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 显示品牌信息
     console.log(`
     ╔══════════════════════════════════════════╗
-    ║           MossCutter v1.0.0              ║
+    ║           MossCutter v1.2.0              ║
     ║    Intelligent Image Grid Cutting Tool   ║
     ║         by SOSOMOSS LTD.                 ║
     ║      https://github.com/sosomoss         ║
@@ -1247,7 +1247,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// ===== v1.1.0 新增功能：预览网格 =====
+// ===== v1.2.0 功能：预览网格 =====
 
 // 生成预览网格
 function generatePreviewGrid() {
