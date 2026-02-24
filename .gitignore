@@ -1,54 +1,64 @@
 # 依赖目录
 node_modules/
+
+# 构建输出
+dist/
+build/
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 日志文件
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 # 运行时数据
-pids
+.DS_Store
 *.pid
 *.seed
 *.pid.lock
-
-# 日志文件
-*.log
-logs/
 
 # 覆盖率目录
 coverage/
 .nyc_output/
 
-# 环境变量
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# 依赖锁定文件
+package-lock.json
+yarn.lock
 
-# 编辑器目录和文件
+# 编辑器文件
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
-# 系统文件
-.DS_Store
+# 操作系统文件
 Thumbs.db
 
-# 构建输出
-dist/
-build/
-out/
+# 测试文件（现在不包含在仓库中）
+test_*.js
+test_*.html
+debug_*.html
 
 # 临时文件
-tmp/
-temp/
+*.backup
+*_fix.css
+*_fix.js
+emergency_*.html
+quick_test.html
 
-# 测试快照
-__snapshots__/
+# 部署脚本（生产环境使用）
+deploy-*.sh
+quick-deploy.sh
+BT-*.md
 
-# 自定义
-*.zip
-*.tar
-*.gz
+# 推广素材
+promotion-images/
+generate_*.js
+
+# 服务器脚本
+start_server.*
