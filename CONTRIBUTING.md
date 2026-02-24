@@ -168,4 +168,4 @@ docs: 更新使用指南
 
 ---
 
-**SOSOMOSS AI** - 致力于开发实用的AI工具
+**SOSOMOSS LTD.** - 致力于开发实用的AI工具（法律实体）

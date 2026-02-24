@@ -145,7 +145,7 @@ npm run dev
 
 ## 👥 作者
 
-**SOSOMOSS AI** - AI工具开发团队
+**SOSOMOSS LTD.** - AI工具开发团队（法律实体）
 
 - 网站: [sosomoss.net](https://sosomoss.net) 
 - GitHub: [@sosomoss2050](https://github.com/sosomoss2050)

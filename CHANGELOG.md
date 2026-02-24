@@ -4,18 +4,20 @@
 
 ### 🎯 主要更新
 
-#### 1. 品牌信息升级
-- **品牌名称**: SOSOMOSS LTD. → SOSOMOSS AI
+#### 1. 品牌信息优化
+- **品牌展示**: 前端展示使用 SOSOMOSS AI（强调AI技术驱动）
+- **法律实体**: 法律声明使用 SOSOMOSS LTD.（正式注册公司）
 - **修改位置**:
-  - 页面meta描述
-  - 页面副标题
-  - README.md文档
-  - CONTRIBUTING.md文档
-  - package.json文件
+  - 页面meta描述: SOSOMOSS AI
+  - 页面副标题: SOSOMOSS AI
+  - 页面页脚: SOSOMOSS LTD.（法律实体）
+  - README.md: 展示用SOSOMOSS AI，法律声明用SOSOMOSS LTD.
+  - CONTRIBUTING.md: 法律声明用SOSOMOSS LTD.
+  - package.json: 作者用SOSOMOSS LTD.（法律实体）
 - **品牌策略**:
-  - 前端展示: SOSOMOSS AI (强调AI技术驱动)
-  - 法律实体: SOSOMOSS LTD. (页脚保持)
-  - 定位: AI驱动的智能工具系列
+  - 前端展示: SOSOMOSS AI (技术品牌，用户界面)
+  - 法律实体: SOSOMOSS LTD. (公司实体，法律文件)
+  - 定位: AI技术驱动的智能工具系列
 
 #### 2. 界面布局优化
 - **两列布局重构**:
@@ -102,7 +104,8 @@
 
 ---
 
-**SOSOMOSS AI** - 致力于开发实用的AI工具  
+**SOSOMOSS LTD.** - 致力于开发实用的AI工具（法律实体）  
+**SOSOMOSS AI** - AI技术品牌（前端展示）  
 **MossTools系列** - 更多实用工具即将发布
 
 *更新日期: 2026年2月24日*
