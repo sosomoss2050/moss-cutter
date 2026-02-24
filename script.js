@@ -106,6 +106,9 @@ function init() {
     // 下载按钮
     downloadBtn.addEventListener('click', downloadZip);
     
+    // 预览控制按钮 - 在页面加载时绑定
+    bindPreviewControls();
+    
     // 初始更新
     updateGrid();
 }
