@@ -62,6 +62,19 @@
                         <button class="btn btn-outline" data-rows="4" data-cols="4">4×4 (十六宫格)</button>
                         <button class="btn btn-outline" data-rows="3" data-cols="4">3×4 (十二宫格)</button>
                     </div>
+                    
+                    <!-- 切割模式选择 -->
+                    <div class="input-group" style="margin-top: 20px;">
+                        <label for="cuttingMode"><i class="fas fa-crop-alt"></i> 切割模式</label>
+                        <select id="cuttingMode">
+                            <option value="uniform">均匀切割（保持宽高比）</option>
+                            <option value="exact">精确像素（不丢失像素）</option>
+                        </select>
+                        <small style="display: block; margin-top: 8px; color: var(--text-tertiary); font-size: 0.875rem;">
+                            <i class="fas fa-info-circle"></i> 
+                            <span id="modeDescription">均匀切割：每个小图片宽高比一致，适合拼图</span>
+                        </small>
+                    </div>
                 </div>
 
                 <div class="output-controls">

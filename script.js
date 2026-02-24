@@ -22,6 +22,8 @@ const qualityControl = document.getElementById('qualityControl');
 const qualitySlider = document.getElementById('quality');
 const qualityValue = document.getElementById('qualityValue');
 const fileNameInput = document.getElementById('fileName');
+const cuttingModeSelect = document.getElementById('cuttingMode');
+const modeDescription = document.getElementById('modeDescription');
 const cutBtn = document.getElementById('cutBtn');
 const resetBtn = document.getElementById('resetBtn');
 const progressSection = document.getElementById('progressSection');
@@ -72,6 +74,12 @@ function init() {
     qualitySlider.addEventListener('input', () => {
         qualityValue.textContent = qualitySlider.value;
     });
+    
+    // 切割模式变化
+    cuttingModeSelect.addEventListener('change', updateModeDescription);
+    
+    // 初始化模式描述
+    updateModeDescription();
     
     // 切割按钮
     cutBtn.addEventListener('click', cutImage);
@@ -247,6 +255,7 @@ async function cutImage() {
     const rows = currentRows;
     const cols = currentCols;
     const totalPieces = rows * cols;
+    const mode = cuttingModeSelect.value;
     
     // 创建画布用于切割
     const sourceCanvas = document.createElement('canvas');
@@ -257,69 +266,24 @@ async function cutImage() {
     sourceCanvas.height = originalImage.height;
     sourceCtx.drawImage(originalImage, 0, 0);
     
-    // 计算单元格尺寸（改进算法，不丢失像素）
-    // 基础单元格尺寸
-    const baseCellWidth = Math.floor(originalImage.width / cols);
-    const baseCellHeight = Math.floor(originalImage.height / rows);
+    let colWidths, rowHeights, colStarts, rowStarts;
+    let lostPixels = { width: 0, height: 0 };
     
-    // 计算余数（需要额外分配的像素）
-    const widthRemainder = originalImage.width % cols;
-    const heightRemainder = originalImage.height % rows;
-    
-    // 存储每行/列的实际尺寸
-    const colWidths = [];
-    const rowHeights = [];
-    
-    // 计算每列的宽度（均匀分配余数）
-    for (let col = 0; col < cols; col++) {
-        colWidths[col] = baseCellWidth + (col < widthRemainder ? 1 : 0);
+    if (mode === 'exact') {
+        // 模式1：精确像素模式（不丢失任何像素）
+        ({ colWidths, rowHeights, colStarts, rowStarts } = calculateExactCut(
+            originalImage.width, originalImage.height, rows, cols
+        ));
+    } else {
+        // 模式2：均匀切割模式（保持宽高比）
+        ({ colWidths, rowHeights, colStarts, rowStarts, lostPixels } = calculateUniformCut(
+            originalImage.width, originalImage.height, rows, cols
+        ));
     }
     
-    // 计算每行的高度（均匀分配余数）
-    for (let row = 0; row < rows; row++) {
-        rowHeights[row] = baseCellHeight + (row < heightRemainder ? 1 : 0);
-    }
-    
-    // 计算起始位置
-    const colStarts = [];
-    const rowStarts = [];
-    let currentX = 0;
-    let currentY = 0;
-    
-    for (let col = 0; col < cols; col++) {
-        colStarts[col] = currentX;
-        currentX += colWidths[col];
-    }
-    
-    for (let row = 0; row < rows; row++) {
-        rowStarts[row] = currentY;
-        currentY += rowHeights[row];
-    }
-    
-    // 显示切割信息（调试用）
-    console.log('切割信息:');
-    console.log(`图片尺寸: ${originalImage.width} × ${originalImage.height}`);
-    console.log(`网格: ${rows} × ${cols}`);
-    console.log(`基础单元格: ${baseCellWidth} × ${baseCellHeight}`);
-    console.log(`宽度余数: ${widthRemainder}, 高度余数: ${heightRemainder}`);
-    console.log('列宽度分布:', colWidths);
-    console.log('行高度分布:', rowHeights);
-    
-    // 在界面上显示切割信息
-    const cutInfo = document.getElementById('cutInfo');
-    if (cutInfo) {
-        let infoHTML = `
-            <div style="background: #f0f9ff; padding: 12px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-bottom: 16px;">
-                <strong>切割算法信息:</strong><br>
-                • 图片尺寸: ${originalImage.width} × ${originalImage.height}<br>
-                • 网格: ${rows} × ${cols}<br>
-                • 基础单元格: ${baseCellWidth} × ${baseCellHeight}<br>
-                • 余数分配: 宽度余数 ${widthRemainder}px, 高度余数 ${heightRemainder}px<br>
-                • 确保不丢失任何像素
-            </div>
-        `;
-        cutInfo.innerHTML = infoHTML;
-    }
+    // 显示切割信息
+    displayCutInfo(mode, originalImage.width, originalImage.height, rows, cols, 
+                   colWidths, rowHeights, lostPixels);
     
     // 创建 ZIP
     const zip = new JSZip();
@@ -466,6 +430,174 @@ async function downloadZip() {
         console.error('下载失败:', error);
         alert('下载失败，请重试');
         progressSection.style.display = 'none';
+    }
+}
+
+// 更新切割模式描述
+function updateModeDescription() {
+    const mode = cuttingModeSelect.value;
+    let description = '';
+    
+    if (mode === 'uniform') {
+        description = '均匀切割：每个小图片宽高比一致，网格均匀，适合拼图设计';
+    } else {
+        description = '精确像素：不丢失任何像素，但宽高比可能不一致，适合精确处理';
+    }
+    
+    if (modeDescription) {
+        modeDescription.textContent = description;
+    }
+}
+
+// 计算精确像素切割（不丢失任何像素）
+function calculateExactCut(width, height, rows, cols) {
+    // 基础单元格尺寸
+    const baseCellWidth = Math.floor(width / cols);
+    const baseCellHeight = Math.floor(height / rows);
+    
+    // 计算余数
+    const widthRemainder = width % cols;
+    const heightRemainder = height % rows;
+    
+    // 存储每行/列的实际尺寸
+    const colWidths = [];
+    const rowHeights = [];
+    
+    // 计算每列的宽度（均匀分配余数）
+    for (let col = 0; col < cols; col++) {
+        colWidths[col] = baseCellWidth + (col < widthRemainder ? 1 : 0);
+    }
+    
+    // 计算每行的高度（均匀分配余数）
+    for (let row = 0; row < rows; row++) {
+        rowHeights[row] = baseCellHeight + (row < heightRemainder ? 1 : 0);
+    }
+    
+    // 计算起始位置
+    const colStarts = [];
+    const rowStarts = [];
+    let currentX = 0;
+    let currentY = 0;
+    
+    for (let col = 0; col < cols; col++) {
+        colStarts[col] = currentX;
+        currentX += colWidths[col];
+    }
+    
+    for (let row = 0; row < rows; row++) {
+        rowStarts[row] = currentY;
+        currentY += rowHeights[row];
+    }
+    
+    return { colWidths, rowHeights, colStarts, rowStarts };
+}
+
+// 计算均匀切割（保持宽高比）
+function calculateUniformCut(width, height, rows, cols) {
+    // 计算理想的单元格尺寸（保持宽高比）
+    const idealCellWidth = Math.floor(width / cols);
+    const idealCellHeight = Math.floor(height / rows);
+    
+    // 为了保持宽高比一致，我们需要调整尺寸
+    // 方法：所有单元格使用相同的尺寸，可能会丢失边缘像素
+    const uniformCellWidth = Math.floor(width / cols);
+    const uniformCellHeight = Math.floor(height / rows);
+    
+    // 计算实际使用的总尺寸
+    const usedWidth = uniformCellWidth * cols;
+    const usedHeight = uniformCellHeight * rows;
+    
+    // 计算丢失的像素
+    const lostWidth = width - usedWidth;
+    const lostHeight = height - usedHeight;
+    
+    // 计算起始位置（居中显示）
+    const startX = Math.floor(lostWidth / 2);
+    const startY = Math.floor(lostHeight / 2);
+    
+    // 所有单元格尺寸相同
+    const colWidths = Array(cols).fill(uniformCellWidth);
+    const rowHeights = Array(rows).fill(uniformCellHeight);
+    
+    // 计算起始位置
+    const colStarts = [];
+    const rowStarts = [];
+    
+    for (let col = 0; col < cols; col++) {
+        colStarts[col] = startX + (col * uniformCellWidth);
+    }
+    
+    for (let row = 0; row < rows; row++) {
+        rowStarts[row] = startY + (row * uniformCellHeight);
+    }
+    
+    return { 
+        colWidths, 
+        rowHeights, 
+        colStarts, 
+        rowStarts,
+        lostPixels: { width: lostWidth, height: lostHeight }
+    };
+}
+
+// 显示切割信息
+function displayCutInfo(mode, width, height, rows, cols, colWidths, rowHeights, lostPixels = { width: 0, height: 0 }) {
+    const cutInfo = document.getElementById('cutInfo');
+    if (!cutInfo) return;
+    
+    let infoHTML = '';
+    const totalWidth = colWidths.reduce((sum, w) => sum + w, 0);
+    const totalHeight = rowHeights.reduce((sum, h) => sum + h, 0);
+    
+    if (mode === 'exact') {
+        infoHTML = `
+            <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1)); 
+                        padding: 16px; border-radius: 12px; border-left: 4px solid #3b82f6; margin-bottom: 20px;">
+                <strong style="display: block; margin-bottom: 8px; color: #1e40af;">
+                    <i class="fas fa-ruler-combined"></i> 精确像素模式
+                </strong>
+                <div style="font-size: 0.95rem; line-height: 1.6;">
+                    • 图片尺寸: <strong>${width} × ${height}</strong><br>
+                    • 网格: <strong>${rows} × ${cols}</strong><br>
+                    • 单元格尺寸分布: <br>
+                    &nbsp;&nbsp;宽度: [${colWidths.join(', ')}] (总和: ${totalWidth})<br>
+                    &nbsp;&nbsp;高度: [${rowHeights.join(', ')}] (总和: ${totalHeight})<br>
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 不丢失任何像素</span><br>
+                    • <span style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> 宽高比可能不一致</span>
+                </div>
+            </div>
+        `;
+    } else {
+        infoHTML = `
+            <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1)); 
+                        padding: 16px; border-radius: 12px; border-left: 4px solid #10b981; margin-bottom: 20px;">
+                <strong style="display: block; margin-bottom: 8px; color: #065f46;">
+                    <i class="fas fa-crop-alt"></i> 均匀切割模式
+                </strong>
+                <div style="font-size: 0.95rem; line-height: 1.6;">
+                    • 图片尺寸: <strong>${width} × ${height}</strong><br>
+                    • 网格: <strong>${rows} × ${cols}</strong><br>
+                    • 单元格尺寸: <strong>${colWidths[0]} × ${rowHeights[0]}</strong> (所有单元格相同)<br>
+                    • 使用的区域: <strong>${totalWidth} × ${totalHeight}</strong><br>
+                    • 丢失的像素: <strong>${lostPixels.width}px 宽度, ${lostPixels.height}px 高度</strong><br>
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 所有单元格宽高比一致</span><br>
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 网格均匀分布</span><br>
+                    • <span style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> 边缘像素可能被裁剪</span>
+                </div>
+            </div>
+        `;
+    }
+    
+    cutInfo.innerHTML = infoHTML;
+    
+    // 控制台输出
+    console.log(`切割模式: ${mode === 'exact' ? '精确像素' : '均匀切割'}`);
+    console.log(`图片尺寸: ${width} × ${height}`);
+    console.log(`网格: ${rows} × ${cols}`);
+    console.log(`列宽度分布: [${colWidths.join(', ')}]`);
+    console.log(`行高度分布: [${rowHeights.join(', ')}]`);
+    if (lostPixels.width > 0 || lostPixels.height > 0) {
+        console.log(`丢失像素: 宽度 ${lostPixels.width}px, 高度 ${lostPixels.height}px`);
     }
 }
 
