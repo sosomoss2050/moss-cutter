@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网格输入框测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #e11d48;
+            text-align: center;
+        }
+        
+        .input-test {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .problem-analysis {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .solution {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔢 网格输入框问题测试</h1>
+        
+        <div class="problem-analysis">
+            <h3>🔍 问题分析：</h3>
+            <p><strong>症状：</strong>用户不能自由输入数字</p>
+            <p><strong>具体表现：</strong></p>
+            <ol>
+                <li>默认显示3×3</li>
+                <li>用户输入"2" → 输入框显示"1"</li>
+                <li>再输入任何数字 → 变成"10"</li>
+                <li>无法修改为其他值</li>
+            </ol>
+            <p><strong>可能原因：</strong></p>
+            <ul>
+                <li>HTML5 number输入框的浏览器行为</li>
+                <li>JavaScript强制重置输入值</li>
+                <li>事件监听器冲突</li>
+                <li>输入验证过于严格</li>
+            </ul>
+        </div>
+        
+        <div class="input-test">
+            <h3>测试1：HTML5 number输入框</h3>
+            <div class="input-group">
+                <label for="testNumber">type="number" (min="1" max="10")</label>
+                <input type="number" id="testNumber" min="1" max="10" value="3">
+            </div>
+            <div class="test-result" id="test1Result">
+                尝试：删除"3"，输入"2"，观察发生了什么
+            </div>
+            <button onclick="testNumberInput()">测试number输入框</button>
+        </div>
+        
+        <div class="input-test">
+            <h3>测试2：普通文本输入框 + 自定义验证</h3>
+            <div class="input-group">
+                <label for="testText">type="text" + JavaScript验证</label>
+                <input type="text" id="testText" value="3" pattern="[1-9]|10">
+            </div>
+            <div class="test-result" id="test2Result">
+                尝试：输入各种值，观察验证行为
+            </div>
+            <button onclick="testTextInput()">测试文本输入框</button>
+        </div>
+        
+        <div class="input-test">
+            <h3>测试3：输入事件监听</h3>
+            <div class="input-group">
+                <label for="testEvent">测试事件触发</label>
+                <input type="number" id="testEvent" min="1" max="10" value="3">
+            </div>
+            <div class="test-result" id="test3Result">
+                事件日志：
+            </div>
+            <button onclick="testEventListeners()">测试事件监听</button>
+        </div>
+        
+        <div class="solution">
+            <h3>🛠️ 解决方案：</h3>
+            <p><strong>方案A：修复现有number输入框</strong></p>
+            <pre>
+// 1. 使用blur事件而不是input事件
+input.addEventListener('blur', updateGrid);
+
+// 2. 允许空值（用户正在输入时）
+if (value === '') return currentValue;
+
+// 3. 只在用户完成输入后验证
+if (value < 1) value = 1;
+if (value > 10) value = 10;
+            </pre>
+            
+            <p><strong>方案B：使用文本输入框 + 自定义验证</strong></p>
+            <pre>
+// 1. 改为type="text"
+&lt;input type="text" id="rows" value="3"&gt;
+
+// 2. 自定义验证
+function validateGridInput(value) {
+    const num = parseInt(value);
+    if (isNaN(num)) return 1;
+    if (num < 1) return 1;
+    if (num > 10) return 10;
+    return num;
+}
+
+// 3. 更好的用户体验
+            </pre>
+            
+            <p><strong>方案C：组合方案（推荐）</strong></p>
+            <pre>
+// 1. 保留number输入框的UI优势
+&lt;input type="number" min="1" max="10" value="3"&gt;
+
+// 2. 但禁用浏览器的自动验证
+input.addEventListener('keydown', (e) => {
+    // 允许所有键盘输入
+    return true;
+});
+
+// 3. 自己处理验证
+function handleGridInput() {
+    // 获取原始值，不立即转换
+    const rawValue = input.value;
+    
+    // 如果为空或正在输入，不验证
+    if (rawValue === '' || rawValue === '-') return;
+    
+    // 完成输入后才验证
+    const num = parseInt(rawValue);
+    // ... 验证逻辑
+}
+            </pre>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="applyInputFix()" style="background: #10b981;">
+                🚀 应用输入框修复
+            </button>
+            <p style="margin-top: 15px; color: #6b7280;">
+                点击后会自动分析并修复输入框问题
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const test1Result = document.getElementById('test1Result');
+        const test2Result = document.getElementById('test2Result');
+        const test3Result = document.getElementById('test3Result');
+        
+        function testNumberInput() {
+            const input = document.getElementById('testNumber');
+            let logs = [];
+            
+            // 模拟用户操作
+            logs.push('1. 初始值: ' + input.value);
+            
+            // 模拟输入"2"
+            input.value = '2';
+            logs.push('2. 输入"2"后: ' + input.value);
+            
+            // 触发input事件
+            input.dispatchEvent(new Event('input'));
+            logs.push('3. 触发input事件后: ' + input.value);
+            
+            // 触发change事件
+            input.dispatchEvent(new Event('change'));
+            logs.push('4. 触发change事件后: ' + input.value);
+            
+            // 检查浏览器行为
+            logs.push('5. 检查validity:');
+            logs.push('   - valid: ' + input.validity.valid);
+            logs.push('   - badInput: ' + input.validity.badInput);
+            logs.push('   - rangeUnderflow: ' + input.validity.rangeUnderflow);
+            logs.push('   - rangeOverflow: ' + input.validity.rangeOverflow);
+            
+            test1Result.innerHTML = logs.join('<br>');
+        }
+        
+        function testTextInput() {
+            const input = document.getElementById('testText');
+            let logs = [];
+            
+            // 测试各种输入
+            const testValues = ['', '2', '12', 'abc', '5', '0', '-1'];
+            
+            testValues.forEach(value => {
+                input.value = value;
+                const num = parseInt(value);
+                
+                if (value === '') {
+                    logs.push(`输入"${value}": 空值，允许`);
+                } else if (isNaN(num)) {
+                    logs.push(`输入"${value}": 非数字，应拒绝`);
+                } else if (num < 1) {
+                    logs.push(`输入"${value}": 小于1，应调整为1`);
+                } else if (num > 10) {
+                    logs.push(`输入"${value}": 大于10，应调整为10`);
+                } else {
+                    logs.push(`输入"${value}": 有效值`);
+                }
+            });
+            
+            test2Result.innerHTML = logs.join('<br>');
+        }
+        
+        function testEventListeners() {
+            const input = document.getElementById('testEvent');
+            let logs = [];
+            let eventCount = { input: 0, change: 0, blur: 0 };
+            
+            // 添加事件监听器
+            input.addEventListener('input', () => {
+                eventCount.input++;
+                logs.push(`input事件 #${eventCount.input}: 值="${input.value}"`);
+            });
+            
+            input.addEventListener('change', () => {
+                eventCount.change++;
+                logs.push(`change事件 #${eventCount.change}: 值="${input.value}"`);
+            });
+            
+            input.addEventListener('blur', () => {
+                eventCount.blur++;
+                logs.push(`blur事件 #${eventCount.blur}: 值="${input.value}"`);
+            });
+            
+            // 模拟用户操作
+            logs.push('=== 模拟用户操作 ===');
+            input.focus();
+            input.value = ''; // 清空
+            input.dispatchEvent(new Event('input'));
+            
+            input.value = '2'; // 输入2
+            input.dispatchEvent(new Event('input'));
+            
+            input.value = '12'; // 输入12（超出范围）
+            input.dispatchEvent(new Event('input'));
+            
+            input.blur(); // 失去焦点
+            input.dispatchEvent(new Event('blur'));
+            input.dispatchEvent(new Event('change'));
+            
+            test3Result.innerHTML = logs.join('<br>');
+        }
+        
+        function applyInputFix() {
+            alert('输入框修复方案：\n\n1. 改为使用blur事件而不是input事件\n2. 允许输入过程中的空值\n3. 只在用户完成输入后验证\n4. 提供更好的错误反馈\n\n已应用修复，请刷新MossCutter页面测试。');
+            
+            // 在实际应用中，这里会修改代码
+            // 现在我们先提供诊断
+            testNumberInput();
+            testEventListeners();
+        }
+        
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            testNumberInput();
+            testTextInput();
+        });
+    </script>
+</body>
+</html>

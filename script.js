@@ -54,9 +54,17 @@ function init() {
     uploadArea.addEventListener('dragleave', handleDragLeave);
     uploadArea.addEventListener('drop', handleDrop);
     
-    // 网格设置
-    rowsInput.addEventListener('input', updateGrid);
-    colsInput.addEventListener('input', updateGrid);
+    // 网格设置 - 优化输入体验
+    rowsInput.addEventListener('blur', updateGrid);
+    colsInput.addEventListener('blur', updateGrid);
+    
+    // 输入时实时更新，但更智能
+    rowsInput.addEventListener('input', handleGridInput);
+    colsInput.addEventListener('input', handleGridInput);
+    
+    // 也监听change事件（用户按回车或选择其他元素时）
+    rowsInput.addEventListener('change', updateGrid);
+    colsInput.addEventListener('change', updateGrid);
     
     // 预设按钮
     presetButtons.forEach(btn => {
@@ -208,6 +216,35 @@ function displayImage(img) {
     }, 50); // 50ms延迟确保渲染完成
 }
 
+// 处理网格输入（实时反馈，但不强制验证）
+function handleGridInput(e) {
+    if (!originalImage) return;
+    
+    const input = e.target;
+    const value = input.value;
+    
+    // 如果输入为空或只是负号，允许继续输入
+    if (value === '' || value === '-') {
+        return;
+    }
+    
+    // 尝试转换为数字
+    const num = parseInt(value);
+    
+    // 如果是有效数字且在范围内，实时更新网格
+    if (!isNaN(num) && num >= 1 && num <= 10) {
+        if (input.id === 'rows') {
+            currentRows = num;
+        } else {
+            currentCols = num;
+        }
+        
+        // 实时更新网格预览（但不强制修改输入框值）
+        drawGrid();
+    }
+    // 如果数字无效或超出范围，不立即纠正，等用户完成输入
+}
+
 // 窗口大小变化时重新计算预览和网格
 function handleWindowResize() {
     if (window.currentDisplayedImage && canvas) {
@@ -228,15 +265,42 @@ window.addEventListener('resize', handleWindowResize);
 function updateGrid() {
     if (!originalImage) return;
     
-    currentRows = parseInt(rowsInput.value) || 1;
-    currentCols = parseInt(colsInput.value) || 1;
+    // 获取原始输入值（不立即转换）
+    let rowsValue = rowsInput.value;
+    let colsValue = colsInput.value;
     
-    // 限制范围
-    currentRows = Math.max(1, Math.min(10, currentRows));
-    currentCols = Math.max(1, Math.min(10, currentCols));
+    // 特殊处理：如果用户正在输入（比如输入"2"但还未完成），不立即验证
+    // 只有当值看起来像完整数字时才验证
     
-    rowsInput.value = currentRows;
-    colsInput.value = currentCols;
+    // 处理行数
+    if (rowsValue === '' || rowsValue === '-') {
+        // 用户正在输入，保持当前值不变
+    } else {
+        const rowsNum = parseInt(rowsValue);
+        if (!isNaN(rowsNum)) {
+            // 有效数字，进行范围限制
+            currentRows = Math.max(1, Math.min(10, rowsNum));
+            rowsInput.value = currentRows; // 更新显示
+        } else {
+            // 无效输入，恢复之前的值
+            rowsInput.value = currentRows;
+        }
+    }
+    
+    // 处理列数（同样的逻辑）
+    if (colsValue === '' || colsValue === '-') {
+        // 用户正在输入，保持当前值不变
+    } else {
+        const colsNum = parseInt(colsValue);
+        if (!isNaN(colsNum)) {
+            // 有效数字，进行范围限制
+            currentCols = Math.max(1, Math.min(10, colsNum));
+            colsInput.value = currentCols; // 更新显示
+        } else {
+            // 无效输入，恢复之前的值
+            colsInput.value = currentCols;
+        }
+    }
     
     drawGrid();
 }
