@@ -508,7 +508,7 @@ async function cutImage() {
             });
             
             // 添加到ZIP
-            const fileName = `piece_${row + 1}_${col + 1}.${format}`;
+            const fileName = `mcut_${row + 1}_${col + 1}.${format}`;
             zip.file(fileName, blob);
             
             // 保存Blob数据用于预览
@@ -679,17 +679,23 @@ function recommendCuttingOptions(width, height) {
     return recommendations;
 }
 
-// 显示智能推荐
+// 显示智能推荐并自动应用
 function showSmartRecommendations(width, height) {
     const recommendations = recommendCuttingOptions(width, height);
     
-    // 更新智能推荐按钮
-    const smartBtn = document.querySelector('[data-type="smart"]');
-    if (smartBtn && recommendations[0]) {
+    // 自动应用第一个推荐（智能推荐）
+    if (recommendations[0]) {
         const rec = recommendations[0];
-        smartBtn.innerHTML = `<i class="fas fa-brain"></i> ${rec.rows}×${rec.cols}`;
-        smartBtn.dataset.rows = rec.rows;
-        smartBtn.dataset.cols = rec.cols;
+        rowsInput.value = rec.rows;
+        colsInput.value = rec.cols;
+        
+        // 更新智能推荐按钮
+        const smartBtn = document.querySelector('[data-type="smart"]');
+        if (smartBtn) {
+            smartBtn.innerHTML = `<i class="fas fa-brain"></i> ${rec.rows}×${rec.cols}`;
+            smartBtn.dataset.rows = rec.rows;
+            smartBtn.dataset.cols = rec.cols;
+        }
     }
     
     // 显示推荐详情
