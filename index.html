@@ -11,6 +11,67 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 按钮显示状态紧急修复 - 2026-02-24 */
+        .preview-controls {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 24px !important;
+            padding: 20px !important;
+            background: var(--bg-secondary) !important;
+            border-radius: var(--radius-lg) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        
+        .preview-actions {
+            display: flex !important;
+            gap: 12px !important;
+            flex-wrap: wrap !important;
+        }
+        
+        .preview-info {
+            color: var(--text-secondary) !important;
+            font-size: 0.9rem !important;
+            margin: 0 !important;
+            text-align: center !important;
+        }
+        
+        /* 确保按钮可见 */
+        #selectAllBtn,
+        #deselectAllBtn,
+        #downloadSelectedBtn,
+        #downloadBtn {
+            display: inline-flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* 修复ZIP下载区域 */
+        .zip-download-section {
+            display: block !important;
+            text-align: center !important;
+        }
+        
+        /* 响应式修复 */
+        @media (max-width: 768px) {
+            .preview-controls {
+                flex-direction: column !important;
+                gap: 16px !important;
+                align-items: stretch !important;
+            }
+            
+            .preview-actions {
+                justify-content: center !important;
+                width: 100% !important;
+            }
+            
+            .preview-info {
+                order: -1 !important;
+                margin-bottom: 10px !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">

@@ -1,0 +1,100 @@
+/* 按钮显示状态修复 - 2026-02-24 */
+
+/* 修复预览控制区域 */
+.preview-controls {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 24px !important;
+    padding: 20px !important;
+    background: var(--bg-secondary) !important;
+    border-radius: var(--radius-lg) !important;
+    border: 1px solid var(--border-color) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.preview-actions {
+    display: flex !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+}
+
+.preview-info {
+    color: var(--text-secondary) !important;
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+    text-align: center !important;
+}
+
+/* 确保按钮可见 */
+#selectAllBtn,
+#deselectAllBtn,
+#downloadSelectedBtn,
+#downloadBtn {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* 修复按钮禁用状态 */
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* 修复ZIP下载区域 */
+.zip-download-section {
+    background: var(--bg-secondary) !important;
+    border-radius: var(--radius-xl) !important;
+    padding: 32px !important;
+    text-align: center !important;
+    border: 1px solid var(--border-color) !important;
+    margin-top: 24px !important;
+    display: block !important;
+}
+
+/* 确保结果区域显示 */
+#resultSection {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* 响应式修复 */
+@media (max-width: 768px) {
+    .preview-controls {
+        flex-direction: column !important;
+        gap: 16px !important;
+        align-items: stretch !important;
+    }
+    
+    .preview-actions {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    .preview-actions .btn {
+        flex: 1 !important;
+        min-width: 120px !important;
+    }
+    
+    .preview-info {
+        order: -1 !important;
+        margin-bottom: 10px !important;
+    }
+}
+
+/* 紧急显示修复 */
+#resultSection .btn {
+    animation: fadeIn 0.5s ease-in !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
