@@ -7,7 +7,7 @@
 ![Version](https://img.shields.io/badge/version-1.1.0-orange)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 
-**智能图片网格切割工具 | 由 SOSOMOSS LTD. 开发**
+**智能图片网格切割工具 | 由 SOSOMOSS AI 开发**
 
 [English](#english) | [中文](#mosscutter-)
 
@@ -145,7 +145,7 @@ npm run dev
 
 ## 👥 作者
 
-**SOSOMOSS LTD.** - AI工具开发团队
+**SOSOMOSS AI** - AI工具开发团队
 
 - 网站: [sosomoss.net](https://sosomoss.net) 
 - GitHub: [@sosomoss2050](https://github.com/sosomoss2050)
