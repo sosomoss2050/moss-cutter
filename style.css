@@ -503,20 +503,23 @@ header h1 i {
    控制区域 - 现代化设计
    ============================================ */
 .controls-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
     margin-bottom: 48px;
 }
 
+.controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
 @media (max-width: 768px) {
-    .controls-section {
+    .controls-grid {
         grid-template-columns: 1fr;
         gap: 24px;
     }
 }
 
-.grid-controls, .output-controls {
+.grid-controls, .cutting-controls, .output-controls {
     background: var(--bg-secondary);
     padding: 32px;
     border-radius: var(--radius-xl);
@@ -525,6 +528,29 @@ header h1 i {
     transition: all var(--transition-normal);
     position: relative;
     overflow: hidden;
+}
+
+/* 右列：上下两个区域 */
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+@media (max-width: 768px) {
+    .right-column {
+        gap: 24px;
+    }
+}
+
+/* 切割设置区特定样式 */
+.cutting-controls {
+    flex: 1;
+}
+
+/* 输出设置区特定样式 */
+.output-controls {
+    flex: 1;
 }
 
 .grid-controls::before, .output-controls::before {
@@ -566,8 +592,8 @@ header h1 i {
 .grid-inputs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-bottom: 24px;
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
 @media (max-width: 480px) {
@@ -577,7 +603,7 @@ header h1 i {
 }
 
 .input-group {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .input-group label {
@@ -713,7 +739,7 @@ header h1 i {
 .preset-buttons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 10px;
     margin-top: 8px;
 }
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MossCutter v1.1.0 - 图片网格切割工具</title>
-    <meta name="description" content="专业的图片网格切割工具，支持预览网格、单独下载、批量选择功能。由 SOSOMOSS LTD. 开发。">
+    <meta name="description" content="专业的图片网格切割工具，支持预览网格、单独下载、批量选择功能。由 SOSOMOSS AI 开发。">
     <meta name="keywords" content="图片切割,网格切割,9宫格,图片处理,在线工具,MossTools">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,7 +77,7 @@
     <div class="container">
         <header>
             <h1><i class="fas fa-cut"></i> MossCutter - 图片网格切割工具</h1>
-            <p class="subtitle">由 SOSOMOSS LTD. 开发 | 上传图片，选择网格大小，一键切割并打包下载</p>
+            <p class="subtitle">由 SOSOMOSS AI 开发 | 上传图片，选择网格大小，一键切割并打包下载</p>
         </header>
 
         <main>
@@ -105,131 +105,137 @@
             </div>
 
             <div class="controls-section">
-                <div class="grid-controls">
-                    <h3><i class="fas fa-th"></i> 网格设置</h3>
-                    <div class="grid-inputs">
-                        <div class="input-group">
-                            <label for="rows" title="网格的行数，决定垂直方向切割多少片">
-                                <i class="fas fa-arrows-alt-v"></i> 行数
-                            </label>
-                            <input type="number" id="rows" min="1" max="10" value="3" 
-                                   title="输入1-10之间的数字，决定垂直方向切割多少片">
+                <div class="controls-grid">
+                    <!-- 左列：网格设置区 -->
+                    <div class="grid-controls">
+                        <h3><i class="fas fa-th"></i> 网格设置</h3>
+                        <div class="grid-inputs">
+                            <div class="input-group">
+                                <label for="rows" title="网格的行数，决定垂直方向切割多少片">
+                                    <i class="fas fa-arrows-alt-v"></i> 行数
+                                </label>
+                                <input type="number" id="rows" min="1" max="10" value="3" 
+                                       title="输入1-10之间的数字，决定垂直方向切割多少片">
+                            </div>
+                            <div class="input-group">
+                                <label for="cols" title="网格的列数，决定水平方向切割多少片">
+                                    <i class="fas fa-arrows-alt-h"></i> 列数
+                                </label>
+                                <input type="number" id="cols" min="1" max="10" value="3" 
+                                       title="输入1-10之间的数字，决定水平方向切割多少片">
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label for="cols" title="网格的列数，决定水平方向切割多少片">
-                                <i class="fas fa-arrows-alt-h"></i> 列数
-                            </label>
-                            <input type="number" id="cols" min="1" max="10" value="3" 
-                                   title="输入1-10之间的数字，决定水平方向切割多少片">
+                        <div class="preset-buttons" id="presetButtons">
+                            <!-- 智能推荐按钮将由JavaScript动态生成 -->
+                            <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="smart" 
+                                    title="智能推荐：根据图片尺寸自动计算最佳切割方案">
+                                <i class="fas fa-brain"></i> 智能推荐
+                            </button>
+                            <button class="btn btn-outline" data-rows="2" data-cols="2" data-type="fixed" 
+                                    title="四宫格：简单分割，适合对比展示">2×2</button>
+                            <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="fixed" 
+                                    title="九宫格：社交媒体常用，适合拼图分享">3×3</button>
+                            <button class="btn btn-outline" data-rows="4" data-cols="4" data-type="fixed" 
+                                    title="十六宫格：精细分割，适合大图处理">4×4</button>
+                            <button class="btn btn-outline" data-rows="5" data-cols="5" data-type="fixed" 
+                                    title="二十五宫格：中等精细度，适合细节展示">5×5</button>
                         </div>
-                    </div>
-                    <div class="preset-buttons" id="presetButtons">
-                        <!-- 智能推荐按钮将由JavaScript动态生成 -->
-                        <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="smart" 
-                                title="智能推荐：根据图片尺寸自动计算最佳切割方案">
-                            <i class="fas fa-brain"></i> 智能推荐
-                        </button>
-                        <button class="btn btn-outline" data-rows="2" data-cols="2" data-type="fixed" 
-                                title="四宫格：简单分割，适合对比展示">2×2</button>
-                        <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="fixed" 
-                                title="九宫格：社交媒体常用，适合拼图分享">3×3</button>
-                        <button class="btn btn-outline" data-rows="4" data-cols="4" data-type="fixed" 
-                                title="十六宫格：精细分割，适合大图处理">4×4</button>
-                        <button class="btn btn-outline" data-rows="5" data-cols="5" data-type="fixed" 
-                                title="二十五宫格：中等精细度，适合细节展示">5×5</button>
-                    </div>
-                    
-                    <!-- 智能推荐信息 -->
-                    <div id="smartRecommendation" style="display: none; margin-top: 16px;">
-                        <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1)); 
-                                    padding: 12px; border-radius: 8px; border-left: 4px solid #6366f1;">
-                            <strong style="color: #4f46e5;">
-                                <i class="fas fa-lightbulb"></i> 智能推荐
-                            </strong>
-                            <div id="recommendationDetails" style="margin-top: 8px; font-size: 0.9rem;">
-                                <!-- 推荐详情将由JavaScript填充 -->
+                        
+                        <!-- 智能推荐信息 -->
+                        <div id="smartRecommendation" style="display: none; margin-top: 16px;">
+                            <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1)); 
+                                        padding: 12px; border-radius: 8px; border-left: 4px solid #6366f1;">
+                                <strong style="color: #4f46e5;">
+                                    <i class="fas fa-lightbulb"></i> 智能推荐
+                                </strong>
+                                <div id="recommendationDetails" style="margin-top: 8px; font-size: 0.9rem;">
+                                    <!-- 推荐详情将由JavaScript填充 -->
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- 简单模式切换 -->
-                    <div class="input-group" style="margin-top: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <label style="margin: 0;">
-                                <i class="fas fa-sliders-h"></i> 切割设置
-                            </label>
-                            <button id="toggleAdvanced" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;" 
-                                    title="显示/隐藏高级切割选项，适合专业用户">
-                                <i class="fas fa-cog"></i> 高级选项
-                            </button>
-                        </div>
-                        
-                        <!-- 简单模式（默认显示） -->
-                        <div id="simpleMode" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05)); 
-                                                    padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);"
-                             title="智能切割模式：自动处理宽高比问题，添加少量白边确保所有切片大小一致">
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                                <div style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; 
-                                            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;"
-                                     title="推荐使用">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                                <div>
-                                    <strong style="color: #065f46;">智能切割（推荐）</strong>
-                                    <div style="font-size: 0.85rem; color: #6b7280;">
-                                        自动处理宽高比，保持图片完整
+                    <!-- 右列：分为上下两个区域 -->
+                    <div class="right-column">
+                        <!-- 右上：切割设置区 -->
+                        <div class="cutting-controls">
+                            <h3><i class="fas fa-sliders-h"></i> 切割设置</h3>
+                            
+                            <div style="text-align: right; margin-bottom: 12px;">
+                                <button id="toggleAdvanced" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;" 
+                                        title="显示/隐藏高级切割选项，适合专业用户">
+                                    <i class="fas fa-cog"></i> 高级选项
+                                </button>
+                            </div>
+                            
+                            <!-- 简单模式（默认显示） -->
+                            <div id="simpleMode" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05)); 
+                                                        padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);"
+                                 title="智能切割模式：自动处理宽高比问题，添加少量白边确保所有切片大小一致">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <div style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; 
+                                                display: flex; align-items: center; justify-content: center; font-size: 0.9rem;"
+                                         title="推荐使用">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #065f46;">智能切割（推荐）</strong>
+                                        <div style="font-size: 0.85rem; color: #6b7280;">
+                                            自动处理宽高比，保持图片完整
+                                        </div>
                                     </div>
                                 </div>
+                                <div style="font-size: 0.8rem; color: #6b7280; padding-left: 34px;">
+                                    <i class="fas fa-info-circle"></i> 
+                                    会自动添加少量白边确保所有切片大小一致
+                                </div>
                             </div>
-                            <div style="font-size: 0.8rem; color: #6b7280; padding-left: 34px;">
-                                <i class="fas fa-info-circle"></i> 
-                                会自动添加少量白边确保所有切片大小一致
+                            
+                            <!-- 高级模式（默认隐藏） -->
+                            <div id="advancedMode" style="display: none; margin-top: 12px;">
+                                <div style="margin-bottom: 12px;">
+                                    <label for="cuttingMode" style="display: block; margin-bottom: 6px; font-size: 0.9rem;">
+                                        <i class="fas fa-crop-alt"></i> 切割模式
+                                    </label>
+                                    <select id="cuttingMode" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+                                        <option value="fill">智能模式（推荐） - 自动处理宽高比</option>
+                                        <option value="exact">精确模式 - 不丢失任何像素</option>
+                                        <option value="uniform">裁剪模式 - 裁剪边缘保持比例</option>
+                                    </select>
+                                </div>
+                                <div id="modeDescription" style="font-size: 0.8rem; color: #6b7280; background: rgba(16, 185, 129, 0.05); 
+                                                                  padding: 8px 12px; border-radius: 6px; border-left: 3px solid #10b981;">
+                                    <i class="fas fa-lightbulb"></i> 
+                                    智能模式会自动添加少量白边，确保所有切片大小一致且不丢失像素
+                                </div>
                             </div>
                         </div>
                         
-                        <!-- 高级模式（默认隐藏） -->
-                        <div id="advancedMode" style="display: none; margin-top: 12px;">
-                            <div style="margin-bottom: 12px;">
-                                <label for="cuttingMode" style="display: block; margin-bottom: 6px; font-size: 0.9rem;">
-                                    <i class="fas fa-crop-alt"></i> 切割模式
+                        <!-- 右下：输出设置区 -->
+                        <div class="output-controls">
+                            <h3><i class="fas fa-download"></i> 输出设置</h3>
+                            <div class="input-group">
+                                <label for="fileName"><i class="fas fa-file-archive"></i> 压缩包名称</label>
+                                <input type="text" id="fileName" value="cut_images">
+                            </div>
+                            <div class="input-group">
+                                <label for="imageFormat" title="选择输出图片的格式">
+                                    <i class="fas fa-file-image"></i> 输出格式
                                 </label>
-                                <select id="cuttingMode" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color);">
-                                    <option value="fill">智能模式（推荐） - 自动处理宽高比</option>
-                                    <option value="exact">精确模式 - 不丢失任何像素</option>
-                                    <option value="uniform">裁剪模式 - 裁剪边缘保持比例</option>
+                                <select id="imageFormat">
+                                    <option value="png" title="PNG格式：无损压缩，适合包含文字或线条的图片">PNG (无损)</option>
+                                    <option value="jpeg" title="JPEG格式：有损压缩，适合照片，文件较小">JPEG (有损)</option>
+                                    <option value="webp" title="WebP格式：现代格式，兼顾质量和文件大小">WebP (现代)</option>
                                 </select>
                             </div>
-                            <div id="modeDescription" style="font-size: 0.8rem; color: #6b7280; background: rgba(16, 185, 129, 0.05); 
-                                                              padding: 8px 12px; border-radius: 6px; border-left: 3px solid #10b981;">
-                                <i class="fas fa-lightbulb"></i> 
-                                智能模式会自动添加少量白边，确保所有切片大小一致且不丢失像素
+                            <div class="quality-control" id="qualityControl" style="display: none;">
+                                <label for="quality" title="JPEG/WebP格式的压缩质量，数字越高质量越好但文件越大">
+                                    <i class="fas fa-compress-alt"></i> 质量: <span id="qualityValue">85</span>%
+                                </label>
+                                <input type="range" id="quality" min="1" max="100" value="85" 
+                                       title="拖动滑块调整图片质量，1%最低质量，100%最高质量">
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="output-controls">
-                    <h3><i class="fas fa-download"></i> 输出设置</h3>
-                    <div class="input-group">
-                        <label for="fileName"><i class="fas fa-file-archive"></i> 压缩包名称</label>
-                        <input type="text" id="fileName" value="cut_images">
-                    </div>
-                    <div class="input-group">
-                        <label for="imageFormat" title="选择输出图片的格式">
-                            <i class="fas fa-file-image"></i> 输出格式
-                        </label>
-                        <select id="imageFormat">
-                            <option value="png" title="PNG格式：无损压缩，适合包含文字或线条的图片">PNG (无损)</option>
-                            <option value="jpeg" title="JPEG格式：有损压缩，适合照片，文件较小">JPEG (有损)</option>
-                            <option value="webp" title="WebP格式：现代格式，兼顾质量和文件大小">WebP (现代)</option>
-                        </select>
-                    </div>
-                    <div class="quality-control" id="qualityControl" style="display: none;">
-                        <label for="quality" title="JPEG/WebP格式的压缩质量，数字越高质量越好但文件越大">
-                            <i class="fas fa-compress-alt"></i> 质量: <span id="qualityValue">85</span>%
-                        </label>
-                        <input type="range" id="quality" min="1" max="100" value="85" 
-                               title="拖动滑块调整图片质量，1%最低质量，100%最高质量">
                     </div>
                 </div>
             </div>
