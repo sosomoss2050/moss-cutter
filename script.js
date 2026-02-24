@@ -1363,8 +1363,14 @@ async function downloadSelectedPieces() {
             compressionOptions: { level: 6 }
         });
         
-        // 保存文件
-        const zipName = `selected_pieces_${Date.now()}.zip`;
+        // 保存文件 - 使用mcut_selected_YYYYMMDDHHMM格式
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const zipName = `mcut_selected_${year}${month}${day}${hours}${minutes}.zip`;
         saveAs(content, zipName);
         
         updateProgress(100, '下载完成！');
