@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- 背景圆形 -->
+  <circle cx="50" cy="50" r="45" fill="#4f46e5"/>
+  
+  <!-- 小龙虾身体（简化版） -->
+  <ellipse cx="50" cy="55" rx="20" ry="15" fill="#8b5cf6"/>
+  
+  <!-- 头部 -->
+  <ellipse cx="50" cy="45" rx="15" ry="10" fill="#8b5cf6"/>
+  
+  <!-- 眼睛 -->
+  <circle cx="45" cy="43" r="3" fill="#ffffff"/>
+  <circle cx="55" cy="43" r="3" fill="#ffffff"/>
+  <circle cx="45" cy="43" r="1" fill="#000000"/>
+  <circle cx="55" cy="43" r="1" fill="#000000"/>
+  
+  <!-- 左钳子（举起来） -->
+  <path d="M30,50 Q25,40 20,45 Q25,50 30,50" fill="#a78bfa"/>
+  
+  <!-- 右钳子（拿着剪刀） -->
+  <path d="M70,50 Q75,40 80,45 Q75,50 70,50" fill="#a78bfa"/>
+  
+  <!-- 剪刀（简化） -->
+  <g transform="translate(75,42) rotate(45)">
+    <line x1="-5" y1="0" x2="5" y2="0" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <line x1="0" y1="-5" x2="0" y2="5" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  
+  <!-- 网格元素（被剪切） -->
+  <rect x="25" y="25" width="20" height="15" rx="2" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+  <line x1="25" y1="30" x2="45" y2="30" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+  <line x1="25" y1="35" x2="45" y2="35" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+  <line x1="30" y1="25" x2="30" y2="40" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+  <line x1="35" y1="25" x2="35" y2="40" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+  <line x1="40" y1="25" x2="40" y2="40" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+</svg>
