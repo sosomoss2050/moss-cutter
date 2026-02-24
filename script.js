@@ -24,6 +24,9 @@ const qualityValue = document.getElementById('qualityValue');
 const fileNameInput = document.getElementById('fileName');
 const cuttingModeSelect = document.getElementById('cuttingMode');
 const modeDescription = document.getElementById('modeDescription');
+const toggleAdvancedBtn = document.getElementById('toggleAdvanced');
+const simpleMode = document.getElementById('simpleMode');
+const advancedMode = document.getElementById('advancedMode');
 const presetButtons = document.querySelectorAll('.preset-buttons .btn');
 const smartRecommendation = document.getElementById('smartRecommendation');
 const recommendationDetails = document.getElementById('recommendationDetails');
@@ -77,6 +80,9 @@ function init() {
     qualitySlider.addEventListener('input', () => {
         qualityValue.textContent = qualitySlider.value;
     });
+    
+    // 高级选项切换
+    toggleAdvancedBtn.addEventListener('click', toggleAdvancedMode);
     
     // 切割模式变化
     cuttingModeSelect.addEventListener('change', updateModeDescription);
@@ -614,17 +620,38 @@ function applyRecommendation(rows, cols) {
     });
 }
 
+// 切换高级选项
+function toggleAdvancedMode() {
+    const isAdvanced = advancedMode.style.display === 'block';
+    
+    if (isAdvanced) {
+        // 切换到简单模式
+        advancedMode.style.display = 'none';
+        simpleMode.style.display = 'block';
+        toggleAdvancedBtn.innerHTML = '<i class="fas fa-cog"></i> 高级选项';
+        toggleAdvancedBtn.classList.remove('btn-primary');
+        toggleAdvancedBtn.classList.add('btn-outline');
+    } else {
+        // 切换到高级模式
+        advancedMode.style.display = 'block';
+        simpleMode.style.display = 'none';
+        toggleAdvancedBtn.innerHTML = '<i class="fas fa-times"></i> 关闭高级';
+        toggleAdvancedBtn.classList.remove('btn-outline');
+        toggleAdvancedBtn.classList.add('btn-primary');
+    }
+}
+
 // 更新切割模式描述
 function updateModeDescription() {
     const mode = cuttingModeSelect.value;
     let description = '';
     
     if (mode === 'fill') {
-        description = '填充模式：添加白边保持宽高比一致，不丢失任何像素，推荐使用';
+        description = '智能模式会自动添加少量白边，确保所有切片大小一致且不丢失像素';
     } else if (mode === 'uniform') {
-        description = '均匀切割：每个小图片宽高比一致，网格均匀，可能丢失少量边缘像素';
+        description = '裁剪模式会裁剪图片边缘，确保所有切片比例一致，但可能丢失少量像素';
     } else {
-        description = '精确像素：不丢失任何像素，但宽高比可能不一致，适合精确处理';
+        description = '精确模式保证不丢失任何像素，但切片大小可能不一致';
     }
     
     if (modeDescription) {
@@ -791,64 +818,97 @@ function displayCutInfo(mode, width, height, rows, cols, colWidths, rowHeights,
     const totalHeight = rowHeights.reduce((sum, h) => sum + h, 0);
     
     if (mode === 'exact') {
+        const widthConsistent = new Set(colWidths).size === 1;
+        const heightConsistent = new Set(rowHeights).size === 1;
+        const consistentStatus = widthConsistent && heightConsistent ? 
+            '<span style="color: #10b981;">✅ 所有切片大小一致</span>' : 
+            '<span style="color: #f59e0b;">⚠️ 切片大小可能不一致</span>';
+        
         infoHTML = `
             <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1)); 
                         padding: 16px; border-radius: 12px; border-left: 4px solid #3b82f6; margin-bottom: 20px;">
                 <strong style="display: block; margin-bottom: 8px; color: #1e40af;">
-                    <i class="fas fa-ruler-combined"></i> 精确像素模式
+                    <i class="fas fa-ruler-combined"></i> 精确模式
                 </strong>
                 <div style="font-size: 0.95rem; line-height: 1.6;">
                     • 图片尺寸: <strong>${width} × ${height}</strong><br>
-                    • 网格: <strong>${rows} × ${cols}</strong><br>
-                    • 单元格尺寸分布: <br>
-                    &nbsp;&nbsp;宽度: [${colWidths.join(', ')}] (总和: ${totalWidth})<br>
-                    &nbsp;&nbsp;高度: [${rowHeights.join(', ')}] (总和: ${totalHeight})<br>
-                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 不丢失任何像素</span><br>
-                    • <span style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> 宽高比可能不一致</span>
+                    • 切割网格: <strong>${rows} × ${cols}</strong><br>
+                    • ${consistentStatus}<br>
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 保留所有原始像素</span><br>
+                    • <span style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> 适合专业图像处理</span><br>
+                    <div style="margin-top: 8px; padding: 8px; background: rgba(59, 130, 246, 0.05); border-radius: 6px;">
+                        <i class="fas fa-info-circle" style="color: #3b82f6;"></i>
+                        <span style="color: #6b7280; font-size: 0.9rem;">
+                            此模式保证不丢失任何像素，适合需要精确处理的场景
+                        </span>
+                    </div>
                 </div>
             </div>
         `;
     } else if (mode === 'uniform') {
-        infoHTML = `
-            <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1)); 
-                        padding: 16px; border-radius: 12px; border-left: 4px solid #10b981; margin-bottom: 20px;">
-                <strong style="display: block; margin-bottom: 8px; color: #065f46;">
-                    <i class="fas fa-crop-alt"></i> 均匀切割模式
-                </strong>
-                <div style="font-size: 0.95rem; line-height: 1.6;">
-                    • 图片尺寸: <strong>${width} × ${height}</strong><br>
-                    • 网格: <strong>${rows} × ${cols}</strong><br>
-                    • 单元格尺寸: <strong>${colWidths[0]} × ${rowHeights[0]}</strong> (所有单元格相同)<br>
-                    • 使用的区域: <strong>${totalWidth} × ${totalHeight}</strong><br>
-                    • 丢失的像素: <strong>${lostPixels.width}px 宽度, ${lostPixels.height}px 高度</strong><br>
-                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 所有单元格宽高比一致</span><br>
-                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 网格均匀分布</span><br>
-                    • <span style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> 边缘像素可能被裁剪</span>
-                </div>
-            </div>
-        `;
-    } else {
-        // 填充模式
-        const hasFill = fillPixels.totalWidth > 0 || fillPixels.totalHeight > 0;
-        const fillInfo = hasFill ? 
-            `• 填充白边: 左${fillPixels.left}px, 右${fillPixels.right}px, 上${fillPixels.top}px, 下${fillPixels.bottom}px<br>` : 
-            '• <span style="color: #10b981;">完美匹配，无需填充</span><br>';
+        const lostInfo = lostPixels.width > 0 || lostPixels.height > 0 ? 
+            `• 裁剪边缘: <strong>${lostPixels.width}px 宽度, ${lostPixels.height}px 高度</strong><br>` : 
+            '• <span style="color: #10b981;">✅ 无需裁剪</span><br>';
         
         infoHTML = `
             <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1)); 
                         padding: 16px; border-radius: 12px; border-left: 4px solid #f59e0b; margin-bottom: 20px;">
                 <strong style="display: block; margin-bottom: 8px; color: #92400e;">
-                    <i class="fas fa-border-style"></i> 填充模式（推荐）
+                    <i class="fas fa-crop-alt"></i> 裁剪模式
                 </strong>
                 <div style="font-size: 0.95rem; line-height: 1.6;">
                     • 图片尺寸: <strong>${width} × ${height}</strong><br>
-                    • 网格: <strong>${rows} × ${cols}</strong><br>
-                    • 单元格尺寸: <strong>${colWidths[0]} × ${rowHeights[0]}</strong> (所有单元格相同)<br>
+                    • 切割网格: <strong>${rows} × ${cols}</strong><br>
+                    • 每个切片: <strong>${colWidths[0]} × ${rowHeights[0]}</strong> (大小一致)<br>
+                    ${lostInfo}
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 所有切片比例相同</span><br>
+                    • <span style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> 可能丢失边缘内容</span><br>
+                    <div style="margin-top: 8px; padding: 8px; background: rgba(245, 158, 11, 0.05); border-radius: 6px;">
+                        <i class="fas fa-info-circle" style="color: #f59e0b;"></i>
+                        <span style="color: #6b7280; font-size: 0.9rem;">
+                            此模式会裁剪图片边缘，确保所有切片大小一致且无白边
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        // 智能模式（填充模式）
+        const hasFill = fillPixels.totalWidth > 0 || fillPixels.totalHeight > 0;
+        let fillInfo = '';
+        
+        if (hasFill) {
+            const fillDetails = [];
+            if (fillPixels.left > 0) fillDetails.push(`左${fillPixels.left}px`);
+            if (fillPixels.right > 0) fillDetails.push(`右${fillPixels.right}px`);
+            if (fillPixels.top > 0) fillDetails.push(`上${fillPixels.top}px`);
+            if (fillPixels.bottom > 0) fillDetails.push(`下${fillPixels.bottom}px`);
+            
+            fillInfo = `• 自动添加白边: ${fillDetails.join(', ')}<br>`;
+        } else {
+            fillInfo = '• <span style="color: #10b981;">完美匹配，无需添加白边</span><br>';
+        }
+        
+        infoHTML = `
+            <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1)); 
+                        padding: 16px; border-radius: 12px; border-left: 4px solid #10b981; margin-bottom: 20px;">
+                <strong style="display: block; margin-bottom: 8px; color: #065f46;">
+                    <i class="fas fa-magic"></i> 智能切割模式
+                </strong>
+                <div style="font-size: 0.95rem; line-height: 1.6;">
+                    • 图片尺寸: <strong>${width} × ${height}</strong><br>
+                    • 切割网格: <strong>${rows} × ${cols}</strong><br>
+                    • 每个切片: <strong>${colWidths[0]} × ${rowHeights[0]}</strong> (大小一致)<br>
                     ${fillInfo}
-                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 不丢失任何像素</span><br>
-                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 所有单元格宽高比一致</span><br>
-                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 网格均匀分布</span><br>
-                    • <span style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> 边缘可能添加白边</span>
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 保持所有原始像素</span><br>
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 所有切片比例相同</span><br>
+                    • <span style="color: #10b981;"><i class="fas fa-check-circle"></i> 适合社交媒体拼图</span><br>
+                    <div style="margin-top: 8px; padding: 8px; background: rgba(16, 185, 129, 0.05); border-radius: 6px;">
+                        <i class="fas fa-lightbulb" style="color: #f59e0b;"></i>
+                        <span style="color: #6b7280; font-size: 0.9rem;">
+                            这是最推荐的模式，确保最佳视觉效果
+                        </span>
+                    </div>
                 </div>
             </div>
         `;

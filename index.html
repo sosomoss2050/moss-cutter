@@ -79,18 +79,56 @@
                         </div>
                     </div>
                     
-                    <!-- 切割模式选择 -->
+                    <!-- 简单模式切换 -->
                     <div class="input-group" style="margin-top: 20px;">
-                        <label for="cuttingMode"><i class="fas fa-crop-alt"></i> 切割模式</label>
-                        <select id="cuttingMode">
-                            <option value="fill">填充模式（添加白边，推荐）</option>
-                            <option value="uniform">均匀切割（保持宽高比）</option>
-                            <option value="exact">精确像素（不丢失像素）</option>
-                        </select>
-                        <small style="display: block; margin-top: 8px; color: var(--text-tertiary); font-size: 0.875rem;">
-                            <i class="fas fa-info-circle"></i> 
-                            <span id="modeDescription">填充模式：添加白边保持宽高比，不丢失像素</span>
-                        </small>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label style="margin: 0;">
+                                <i class="fas fa-sliders-h"></i> 切割设置
+                            </label>
+                            <button id="toggleAdvanced" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;">
+                                <i class="fas fa-cog"></i> 高级选项
+                            </button>
+                        </div>
+                        
+                        <!-- 简单模式（默认显示） -->
+                        <div id="simpleMode" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05)); 
+                                                    padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; 
+                                            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div>
+                                    <strong style="color: #065f46;">智能切割（推荐）</strong>
+                                    <div style="font-size: 0.85rem; color: #6b7280;">
+                                        自动处理宽高比，保持图片完整
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #6b7280; padding-left: 34px;">
+                                <i class="fas fa-info-circle"></i> 
+                                会自动添加少量白边确保所有切片大小一致
+                            </div>
+                        </div>
+                        
+                        <!-- 高级模式（默认隐藏） -->
+                        <div id="advancedMode" style="display: none; margin-top: 12px;">
+                            <div style="margin-bottom: 12px;">
+                                <label for="cuttingMode" style="display: block; margin-bottom: 6px; font-size: 0.9rem;">
+                                    <i class="fas fa-crop-alt"></i> 切割模式
+                                </label>
+                                <select id="cuttingMode" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+                                    <option value="fill">智能模式（推荐） - 自动处理宽高比</option>
+                                    <option value="exact">精确模式 - 不丢失任何像素</option>
+                                    <option value="uniform">裁剪模式 - 裁剪边缘保持比例</option>
+                                </select>
+                            </div>
+                            <div id="modeDescription" style="font-size: 0.8rem; color: #6b7280; background: rgba(16, 185, 129, 0.05); 
+                                                              padding: 8px 12px; border-radius: 6px; border-left: 3px solid #10b981;">
+                                <i class="fas fa-lightbulb"></i> 
+                                智能模式会自动添加少量白边，确保所有切片大小一致且不丢失像素
+                            </div>
+                        </div>
                     </div>
                 </div>
 
