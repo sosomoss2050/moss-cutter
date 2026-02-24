@@ -822,17 +822,18 @@ footer p {
 /* 网格线样式 */
 .grid-line {
     position: absolute;
-    background: rgba(102, 126, 234, 0.6);
+    background: rgba(102, 126, 234, 0.8);
+    z-index: 10;
 }
 
 .grid-line.vertical {
     width: 2px;
-    height: 100%;
+    /* height由JavaScript设置 */
 }
 
 .grid-line.horizontal {
-    width: 100%;
     height: 2px;
+    /* width由JavaScript设置 */
 }
 
 .grid-cell {

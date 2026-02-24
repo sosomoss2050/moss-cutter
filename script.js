@@ -246,37 +246,53 @@ function drawGrid() {
     const width = canvas.width;
     const height = canvas.height;
     
+    // 获取canvas在容器中的位置（用于居中计算）
+    const canvasRect = canvas.getBoundingClientRect();
+    const containerRect = gridOverlay.parentElement.getBoundingClientRect();
+    
+    // 计算canvas在网格覆盖层内的偏移
+    const offsetX = canvasRect.left - containerRect.left;
+    const offsetY = canvasRect.top - containerRect.top;
+    
     // 计算网格线位置（使用浮点数确保精确）
     const cellWidth = width / currentCols;
     const cellHeight = height / currentRows;
     
-    // 绘制垂直线
+    // 绘制垂直线（考虑canvas偏移）
     for (let i = 1; i < currentCols; i++) {
-        const x = i * cellWidth;
+        const x = offsetX + (i * cellWidth);
         const line = document.createElement('div');
         line.className = 'grid-line vertical';
         line.style.left = `${x}px`;
+        line.style.top = `${offsetY}px`;
+        line.style.height = `${height}px`;
         gridOverlay.appendChild(line);
     }
     
-    // 绘制水平线
+    // 绘制水平线（考虑canvas偏移）
     for (let i = 1; i < currentRows; i++) {
-        const y = i * cellHeight;
+        const y = offsetY + (i * cellHeight);
         const line = document.createElement('div');
         line.className = 'grid-line horizontal';
         line.style.top = `${y}px`;
+        line.style.left = `${offsetX}px`;
+        line.style.width = `${width}px`;
         gridOverlay.appendChild(line);
     }
     
-    // 绘制网格单元格（可选，用于调试）
+    // 绘制网格单元格（用于调试，显示实际切割区域）
     for (let row = 0; row < currentRows; row++) {
         for (let col = 0; col < currentCols; col++) {
             const cell = document.createElement('div');
             cell.className = 'grid-cell';
-            cell.style.left = `${col * cellWidth}px`;
-            cell.style.top = `${row * cellHeight}px`;
+            cell.style.left = `${offsetX + (col * cellWidth)}px`;
+            cell.style.top = `${offsetY + (row * cellHeight)}px`;
             cell.style.width = `${cellWidth}px`;
             cell.style.height = `${cellHeight}px`;
+            cell.style.border = '1px dashed rgba(255, 0, 0, 0.3)';
+            cell.style.boxSizing = 'border-box';
+            cell.style.position = 'absolute';
+            cell.style.pointerEvents = 'none';
             gridOverlay.appendChild(cell);
         }
     }
