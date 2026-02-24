@@ -566,7 +566,7 @@ async function downloadZip() {
     progressSection.style.display = 'block';
     
     try {
-        const zipName = fileNameInput.value || 'cut_images';
+        const zipName = fileNameInput.value || generateDefaultZipName();
         
         // 生成ZIP
         const content = await window.currentZip.generateAsync({
@@ -1073,12 +1073,26 @@ function resetTool() {
     cutBtn.disabled = true;
     
     // 重置输出设置
-    fileNameInput.value = 'cut_images';
+    fileNameInput.value = generateDefaultZipName();
     imageFormatSelect.value = 'png';
     qualityControl.style.display = 'none';
     
     // 清空ZIP引用
     window.currentZip = null;
+}
+
+// 生成默认ZIP文件名：MossCutYYYYMMDDXXX
+function generateDefaultZipName() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    
+    // 生成三位随机数字（001-999）
+    // 使用更好的随机数生成，减少重复概率
+    const randomNum = String(Math.floor(Math.random() * 900) + 100); // 100-999
+    
+    return `MossCut${year}${month}${day}${randomNum}`;
 }
 
 // 页面加载完成后初始化
@@ -1092,6 +1106,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ║      https://github.com/sosomoss         ║
     ╚══════════════════════════════════════════╝
     `);
+    
+    // 设置默认ZIP文件名
+    fileNameInput.value = generateDefaultZipName();
     
     init();
 });
