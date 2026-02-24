@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网格对齐调试</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .debug-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            border: 2px solid #4a9eff;
+            background: #1e1e1e;
+            text-align: center;
+        }
+        
+        #debugCanvas {
+            border: 1px solid #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            margin-top: 50px;
+        }
+        
+        .grid-overlay-debug {
+            position: absolute;
+            border: 1px dashed rgba(255, 0, 0, 0.5);
+            pointer-events: none;
+        }
+        
+        .grid-line-debug {
+            position: absolute;
+            background: rgba(255, 255, 0, 0.7);
+        }
+        
+        .vertical-line {
+            width: 2px;
+        }
+        
+        .horizontal-line {
+            height: 2px;
+        }
+        
+        .info-panel {
+            background: #3a3a3a;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .control-panel {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #4a9eff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        
+        button:hover {
+            background: #3a8eef;
+        }
+        
+        .coordinate-display {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔍 网格对齐调试工具</h1>
+        
+        <div class="info-panel">
+            <h3>问题诊断：网格线与图片错位</h3>
+            <p>可能原因：</p>
+            <ol>
+                <li>getBoundingClientRect()计算时机问题</li>
+                <li>CSS定位层级问题</li>
+                <li>窗口滚动影响坐标计算</li>
+                <li>Canvas缩放与网格线位置不匹配</li>
+            </ol>
+        </div>
+        
+        <div class="control-panel">
+            <button onclick="testMethod1()">方法1：直接覆盖</button>
+            <button onclick="testMethod2()">方法2：相对定位</button>
+            <button onclick="testMethod3()">方法3：transform定位</button>
+            <button onclick="clearGrid()">清除网格</button>
+        </div>
+        
+        <div class="canvas-container" id="canvasContainer">
+            <canvas id="debugCanvas" width="400" height="300"></canvas>
+            <div id="gridOverlayDebug"></div>
+        </div>
+        
+        <div class="info-panel" id="debugInfo">
+            等待测试...
+        </div>
+        
+        <div class="control-panel">
+            <button onclick="simulateVerticalImage()">模拟竖屏图片 (250×500)</button>
+            <button onclick="simulateWideImage()">模拟宽屏图片 (596×335)</button>
+            <button onclick="simulateSquareImage()">模拟方形图片 (400×400)</button>
+        </div>
+        
+        <div class="info-panel">
+            <h3>调试说明：</h3>
+            <p>1. 红色虚线框：网格覆盖层边界</p>
+            <p>2. 黄色线：网格线</p>
+            <p>3. 绿色框：Canvas边界</p>
+            <p>4. 坐标显示：鼠标位置相对于Canvas</p>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('debugCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridOverlayDebug = document.getElementById('gridOverlayDebug');
+        const debugInfo = document.getElementById('debugInfo');
+        const canvasContainer = document.getElementById('canvasContainer');
+        
+        let currentImageType = 'square';
+        
+        // 绘制测试图片
+        function drawTestImage(type) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (type === 'vertical') {
+                canvas.width = 250;
+                canvas.height = 500;
+                ctx.fillStyle = '#3b82f6';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.fillText('竖屏 250×500', 50, 250);
+            } else if (type === 'wide') {
+                canvas.width = 596;
+                canvas.height = 335;
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.fillText('宽屏 596×335', 200, 167);
+            } else {
+                canvas.width = 400;
+                canvas.height = 400;
+                ctx.fillStyle = '#8b5cf6';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'white';
+                ctx.font = '20px Arial';
+                ctx.fillText('方形 400×400', 120, 200);
+            }
+            
+            currentImageType = type;
+        }
+        
+        // 方法1：直接覆盖（使用绝对定位）
+        function testMethod1() {
+            clearGrid();
+            
+            const canvasRect = canvas.getBoundingClientRect();
+            const containerRect = canvasContainer.getBoundingClientRect();
+            
+            // 设置网格覆盖层与canvas完全重叠
+            gridOverlayDebug.style.position = 'absolute';
+            gridOverlayDebug.style.left = `${canvasRect.left - containerRect.left}px`;
+            gridOverlayDebug.style.top = `${canvasRect.top - containerRect.top}px`;
+            gridOverlayDebug.style.width = `${canvas.width}px`;
+            gridOverlayDebug.style.height = `${canvas.height}px`;
+            gridOverlayDebug.style.border = '1px dashed rgba(255, 0, 0, 0.5)';
+            
+            // 绘制3×3网格
+            const rows = 3, cols = 3;
+            const cellWidth = canvas.width / cols;
+            const cellHeight = canvas.height / rows;
+            
+            for (let i = 1; i < cols; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line-debug vertical-line';
+                line.style.left = `${i * cellWidth}px`;
+                line.style.top = '0';
+                line.style.height = `${canvas.height}px`;
+                gridOverlayDebug.appendChild(line);
+            }
+            
+            for (let i = 1; i < rows; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line-debug horizontal-line';
+                line.style.top = `${i * cellHeight}px`;
+                line.style.left = '0';
+                line.style.width = `${canvas.width}px`;
+                gridOverlayDebug.appendChild(line);
+            }
+            
+            debugInfo.innerHTML = `
+                <strong>方法1：直接覆盖</strong><br>
+                Canvas位置: left=${canvasRect.left}, top=${canvasRect.top}<br>
+                容器位置: left=${containerRect.left}, top=${containerRect.top}<br>
+                相对位置: left=${canvasRect.left - containerRect.left}px, top=${canvasRect.top - containerRect.top}px<br>
+                网格尺寸: ${canvas.width} × ${canvas.height}<br>
+                单元格: ${cellWidth.toFixed(1)} × ${cellHeight.toFixed(1)}
+            `;
+        }
+        
+        // 方法2：相对定位（使用transform）
+        function testMethod2() {
+            clearGrid();
+            
+            const canvasRect = canvas.getBoundingClientRect();
+            const containerRect = canvasContainer.getBoundingClientRect();
+            
+            // 使用transform定位
+            gridOverlayDebug.style.position = 'absolute';
+            gridOverlayDebug.style.left = '0';
+            gridOverlayDebug.style.top = '0';
+            gridOverlayDebug.style.width = `${canvas.width}px`;
+            gridOverlayDebug.style.height = `${canvas.height}px`;
+            gridOverlayDebug.style.transform = `translate(${canvasRect.left - containerRect.left}px, ${canvasRect.top - containerRect.top}px)`;
+            gridOverlayDebug.style.border = '1px dashed rgba(255, 0, 0, 0.5)';
+            
+            // 绘制网格（与方法1相同）
+            const rows = 3, cols = 3;
+            const cellWidth = canvas.width / cols;
+            const cellHeight = canvas.height / rows;
+            
+            for (let i = 1; i < cols; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line-debug vertical-line';
+                line.style.left = `${i * cellWidth}px`;
+                line.style.top = '0';
+                line.style.height = `${canvas.height}px`;
+                gridOverlayDebug.appendChild(line);
+            }
+            
+            for (let i = 1; i < rows; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line-debug horizontal-line';
+                line.style.top = `${i * cellHeight}px`;
+                line.style.left = '0';
+                line.style.width = `${canvas.width}px`;
+                gridOverlayDebug.appendChild(line);
+            }
+            
+            debugInfo.innerHTML = `
+                <strong>方法2：transform定位</strong><br>
+                transform: translate(${canvasRect.left - containerRect.left}px, ${canvasRect.top - containerRect.top}px)<br>
+                优点：性能更好，避免重排<br>
+                网格尺寸: ${canvas.width} × ${canvas.height}
+            `;
+        }
+        
+        // 方法3：最简单的方法 - 让网格覆盖层作为canvas的兄弟元素
+        function testMethod3() {
+            clearGrid();
+            
+            // 最简单的方法：网格覆盖层与canvas同级，使用相同的位置
+            gridOverlayDebug.style.position = 'absolute';
+            gridOverlayDebug.style.left = '50%';
+            gridOverlayDebug.style.top = '50px'; // 匹配canvas的margin-top
+            gridOverlayDebug.style.transform = 'translateX(-50%)';
+            gridOverlayDebug.style.width = `${canvas.width}px`;
+            gridOverlayDebug.style.height = `${canvas.height}px`;
+            gridOverlayDebug.style.border = '1px dashed rgba(255, 0, 0, 0.5)';
+            
+            // 绘制网格
+            const rows = 3, cols = 3;
+            const cellWidth = canvas.width / cols;
+            const cellHeight = canvas.height / rows;
+            
+            for (let i = 1; i < cols; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line-debug vertical-line';
+                line.style.left = `${i * cellWidth}px`;
+                line.style.top = '0';
+                line.style.height = `${canvas.height}px`;
+                gridOverlayDebug.appendChild(line);
+            }
+            
+            for (let i = 1; i < rows; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line-debug horizontal-line';
+                line.style.top = `${i * cellHeight}px`;
+                line.style.left = '0';
+                line.style.width = `${canvas.width}px`;
+                gridOverlayDebug.appendChild(line);
+            }
+            
+            debugInfo.innerHTML = `
+                <strong>方法3：简单居中</strong><br>
+                使用与canvas相同的定位：left: 50%, transform: translateX(-50%)<br>
+                优点：最简单，最可靠<br>
+                网格尺寸: ${canvas.width} × ${canvas.height}
+            `;
+        }
+        
+        function clearGrid() {
+            gridOverlayDebug.innerHTML = '';
+            gridOverlayDebug.style.border = 'none';
+        }
+        
+        function simulateVerticalImage() {
+            drawTestImage('vertical');
+            debugInfo.innerHTML = '模拟竖屏图片：250×500';
+        }
+        
+        function simulateWideImage() {
+            drawTestImage('wide');
+            debugInfo.innerHTML = '模拟宽屏图片：596×335';
+        }
+        
+        function simulateSquareImage() {
+            drawTestImage('square');
+            debugInfo.innerHTML = '模拟方形图片：400×400';
+        }
+        
+        // 添加坐标显示
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 显示坐标
+            let coordDisplay = document.querySelector('.coordinate-display');
+            if (!coordDisplay) {
+                coordDisplay = document.createElement('div');
+                coordDisplay.className = 'coordinate-display';
+                document.body.appendChild(coordDisplay);
+            }
+            
+            coordDisplay.style.left = `${e.clientX + 10}px`;
+            coordDisplay.style.top = `${e.clientY + 10}px`;
+            coordDisplay.textContent = `Canvas: (${Math.round(x)}, ${Math.round(y)})`;
+        });
+        
+        // 初始化
+        drawTestImage('square');
+        debugInfo.innerHTML = '点击按钮测试不同的网格定位方法';
+    </script>
+</body>
+</html>

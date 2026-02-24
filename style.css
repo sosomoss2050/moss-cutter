@@ -256,11 +256,8 @@ header h1 i {
 
 .grid-overlay {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
     pointer-events: none;
+    /* 位置由JavaScript动态设置 */
 }
 
 .image-info {

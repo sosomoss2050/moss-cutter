@@ -208,11 +208,16 @@ function displayImage(img) {
     }, 50); // 50ms延迟确保渲染完成
 }
 
-// 窗口大小变化时重新计算预览
+// 窗口大小变化时重新计算预览和网格
 function handleWindowResize() {
     if (window.currentDisplayedImage && canvas) {
         // 重新显示图片以适配新的大小
         displayImage(window.currentDisplayedImage);
+    }
+    
+    // 如果网格已存在，重新绘制以确保位置正确
+    if (gridOverlay.children.length > 0) {
+        drawGrid();
     }
 }
 
@@ -246,54 +251,60 @@ function drawGrid() {
     const width = canvas.width;
     const height = canvas.height;
     
-    // 获取canvas在容器中的位置（用于居中计算）
-    const canvasRect = canvas.getBoundingClientRect();
-    const containerRect = gridOverlay.parentElement.getBoundingClientRect();
+    // 最简单可靠的方法：网格覆盖层使用与canvas相同的定位
+    // canvas使用 margin: 0 auto 居中，所以网格覆盖层也应该这样
     
-    // 计算canvas在网格覆盖层内的偏移
-    const offsetX = canvasRect.left - containerRect.left;
-    const offsetY = canvasRect.top - containerRect.top;
+    // 重置网格覆盖层样式
+    gridOverlay.style.position = 'absolute';
+    gridOverlay.style.left = '0';
+    gridOverlay.style.right = '0';
+    gridOverlay.style.margin = '0 auto';
+    gridOverlay.style.width = `${width}px`;
+    gridOverlay.style.height = `${height}px`;
+    gridOverlay.style.top = '20px'; // 匹配.preview-container的padding-top
     
     // 计算网格线位置（使用浮点数确保精确）
     const cellWidth = width / currentCols;
     const cellHeight = height / currentRows;
     
-    // 绘制垂直线（考虑canvas偏移）
+    // 绘制垂直线
     for (let i = 1; i < currentCols; i++) {
-        const x = offsetX + (i * cellWidth);
+        const x = i * cellWidth;
         const line = document.createElement('div');
         line.className = 'grid-line vertical';
         line.style.left = `${x}px`;
-        line.style.top = `${offsetY}px`;
+        line.style.top = '0';
         line.style.height = `${height}px`;
         gridOverlay.appendChild(line);
     }
     
-    // 绘制水平线（考虑canvas偏移）
+    // 绘制水平线
     for (let i = 1; i < currentRows; i++) {
-        const y = offsetY + (i * cellHeight);
+        const y = i * cellHeight;
         const line = document.createElement('div');
         line.className = 'grid-line horizontal';
         line.style.top = `${y}px`;
-        line.style.left = `${offsetX}px`;
+        line.style.left = '0';
         line.style.width = `${width}px`;
         gridOverlay.appendChild(line);
     }
     
-    // 绘制网格单元格（用于调试，显示实际切割区域）
-    for (let row = 0; row < currentRows; row++) {
-        for (let col = 0; col < currentCols; col++) {
-            const cell = document.createElement('div');
-            cell.className = 'grid-cell';
-            cell.style.left = `${offsetX + (col * cellWidth)}px`;
-            cell.style.top = `${offsetY + (row * cellHeight)}px`;
-            cell.style.width = `${cellWidth}px`;
-            cell.style.height = `${cellHeight}px`;
-            cell.style.border = '1px dashed rgba(255, 0, 0, 0.3)';
-            cell.style.boxSizing = 'border-box';
-            cell.style.position = 'absolute';
-            cell.style.pointerEvents = 'none';
-            gridOverlay.appendChild(cell);
+    // 可选：绘制网格单元格用于调试
+    if (window.debugMode) {
+        for (let row = 0; row < currentRows; row++) {
+            for (let col = 0; col < currentCols; col++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.style.left = `${col * cellWidth}px`;
+                cell.style.top = `${row * cellHeight}px`;
+                cell.style.width = `${cellWidth}px`;
+                cell.style.height = `${cellHeight}px`;
+                cell.style.border = '1px dashed rgba(255, 0, 0, 0.3)';
+                cell.style.boxSizing = 'border-box';
+                cell.style.position = 'absolute';
+                cell.style.pointerEvents = 'none';
+                gridOverlay.appendChild(cell);
+            }
         }
     }
 }
