@@ -198,6 +198,8 @@ function drawGrid() {
     
     const width = canvas.width;
     const height = canvas.height;
+    
+    // 计算网格线位置（使用浮点数确保精确）
     const cellWidth = width / currentCols;
     const cellHeight = height / currentRows;
     
@@ -255,8 +257,69 @@ async function cutImage() {
     sourceCanvas.height = originalImage.height;
     sourceCtx.drawImage(originalImage, 0, 0);
     
-    const cellWidth = Math.floor(originalImage.width / cols);
-    const cellHeight = Math.floor(originalImage.height / rows);
+    // 计算单元格尺寸（改进算法，不丢失像素）
+    // 基础单元格尺寸
+    const baseCellWidth = Math.floor(originalImage.width / cols);
+    const baseCellHeight = Math.floor(originalImage.height / rows);
+    
+    // 计算余数（需要额外分配的像素）
+    const widthRemainder = originalImage.width % cols;
+    const heightRemainder = originalImage.height % rows;
+    
+    // 存储每行/列的实际尺寸
+    const colWidths = [];
+    const rowHeights = [];
+    
+    // 计算每列的宽度（均匀分配余数）
+    for (let col = 0; col < cols; col++) {
+        colWidths[col] = baseCellWidth + (col < widthRemainder ? 1 : 0);
+    }
+    
+    // 计算每行的高度（均匀分配余数）
+    for (let row = 0; row < rows; row++) {
+        rowHeights[row] = baseCellHeight + (row < heightRemainder ? 1 : 0);
+    }
+    
+    // 计算起始位置
+    const colStarts = [];
+    const rowStarts = [];
+    let currentX = 0;
+    let currentY = 0;
+    
+    for (let col = 0; col < cols; col++) {
+        colStarts[col] = currentX;
+        currentX += colWidths[col];
+    }
+    
+    for (let row = 0; row < rows; row++) {
+        rowStarts[row] = currentY;
+        currentY += rowHeights[row];
+    }
+    
+    // 显示切割信息（调试用）
+    console.log('切割信息:');
+    console.log(`图片尺寸: ${originalImage.width} × ${originalImage.height}`);
+    console.log(`网格: ${rows} × ${cols}`);
+    console.log(`基础单元格: ${baseCellWidth} × ${baseCellHeight}`);
+    console.log(`宽度余数: ${widthRemainder}, 高度余数: ${heightRemainder}`);
+    console.log('列宽度分布:', colWidths);
+    console.log('行高度分布:', rowHeights);
+    
+    // 在界面上显示切割信息
+    const cutInfo = document.getElementById('cutInfo');
+    if (cutInfo) {
+        let infoHTML = `
+            <div style="background: #f0f9ff; padding: 12px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-bottom: 16px;">
+                <strong>切割算法信息:</strong><br>
+                • 图片尺寸: ${originalImage.width} × ${originalImage.height}<br>
+                • 网格: ${rows} × ${cols}<br>
+                • 基础单元格: ${baseCellWidth} × ${baseCellHeight}<br>
+                • 余数分配: 宽度余数 ${widthRemainder}px, 高度余数 ${heightRemainder}px<br>
+                • 确保不丢失任何像素
+            </div>
+        `;
+        cutInfo.innerHTML = infoHTML;
+    }
     
     // 创建 ZIP
     const zip = new JSZip();
@@ -284,22 +347,28 @@ async function cutImage() {
             const progress = (pieceIndex / totalPieces) * 100;
             updateProgress(progress, `切割片段 ${pieceIndex + 1}/${totalPieces}`);
             
+            // 获取当前单元格的实际尺寸
+            const currentCellWidth = colWidths[col];
+            const currentCellHeight = rowHeights[row];
+            const startX = colStarts[col];
+            const startY = rowStarts[row];
+            
             // 创建画布片段
             const pieceCanvas = document.createElement('canvas');
-            pieceCanvas.width = cellWidth;
-            pieceCanvas.height = cellHeight;
+            pieceCanvas.width = currentCellWidth;
+            pieceCanvas.height = currentCellHeight;
             const pieceCtx = pieceCanvas.getContext('2d');
             
             // 从源画布复制区域
             pieceCtx.drawImage(
                 sourceCanvas,
-                col * cellWidth,      // 源x
-                row * cellHeight,     // 源y
-                cellWidth,            // 源宽度
-                cellHeight,           // 源高度
+                startX,               // 源x
+                startY,               // 源y
+                currentCellWidth,     // 源宽度
+                currentCellHeight,    // 源高度
                 0, 0,                 // 目标x,y
-                cellWidth,            // 目标宽度
-                cellHeight            // 目标高度
+                currentCellWidth,     // 目标宽度
+                currentCellHeight     // 目标高度
             );
             
             // 转换为Blob
