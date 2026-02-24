@@ -4,7 +4,7 @@
 
 ![MossCutter Logo](https://img.shields.io/badge/MossCutter-图片网格切割工具-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-1.1.0-orange)
+![Version](https://img.shields.io/badge/version-1.1.1-orange)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 
 **智能图片网格切割工具 | 由 SOSOMOSS AI 开发**
@@ -15,7 +15,12 @@
 
 ## 🌟 特性
 
-### v1.1.0 新增功能
+### v1.1.1 最新版本
+- 🐛 **Bug修复** - 修复状态同步问题，提升用户体验
+- 🔄 **状态管理** - 上传新图片时自动重置结果区域
+- 🧹 **资源清理** - 正确释放内存，防止内存泄漏
+
+### v1.1.0 重要功能
 - 👁️ **预览网格** - 切割后显示所有切片预览
 - 🖱️ **单独下载** - 点击预览图可单独保存
 - ✅ **批量选择** - 可选多个切片批量下载
