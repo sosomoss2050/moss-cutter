@@ -608,6 +608,17 @@ async function cutImage() {
     setTimeout(() => {
         progressSection.style.display = 'none';
         resultSection.style.display = 'block';
+        
+        // 启用预览控制按钮
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const deselectAllBtn = document.getElementById('deselectAllBtn');
+        const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        if (selectAllBtn) selectAllBtn.disabled = false;
+        if (deselectAllBtn) deselectAllBtn.disabled = false;
+        if (downloadSelectedBtn) downloadSelectedBtn.disabled = false;
+        if (downloadBtn) downloadBtn.disabled = false;
     }, 500);
 }
 
