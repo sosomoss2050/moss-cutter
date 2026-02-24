@@ -1,7 +1,7 @@
 {
   "name": "moss-cutter",
-  "version": "1.1.5",
-  "description": "MossCutter v1.1.5 (Stable) - Intelligent Image Grid Cutting Tool by SOSOMOSS AI. Cut images into grids (9-grid, 4-grid, etc.) and download as ZIP",
+  "version": "1.2.0",
+  "description": "MossCutter v1.2.0 (Stable) - Intelligent Image Grid Cutting Tool by SOSOMOSS AI. Cut images into grids (9-grid, 4-grid, etc.) and download as ZIP",
   "main": "index.html",
   "scripts": {
     "start": "python start_server.py",

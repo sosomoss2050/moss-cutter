@@ -4,7 +4,7 @@
 
 ![MossCutter Logo](https://img.shields.io/badge/MossCutter-图片网格切割工具-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-1.1.5-orange)
+![Version](https://img.shields.io/badge/version-1.2.0-orange)
 ![Stable](https://img.shields.io/badge/稳定版-✅-brightgreen)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 
