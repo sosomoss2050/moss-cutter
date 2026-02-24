@@ -153,16 +153,19 @@ function loadImage(file) {
 
 // 显示图片
 function displayImage(img) {
-    // 设置画布尺寸 - 自适应容器
-    const container = canvas.parentElement;
-    const maxWidth = container.clientWidth - 4; // 减去边框
+    // 设置画布尺寸 - 自适应可用空间
+    const previewContainer = canvas.parentElement;
+    const previewSectionElement = previewContainer.parentElement;
+    
+    // 获取实际可用宽度（考虑padding和边框）
+    const availableWidth = previewSectionElement.clientWidth - 40; // 减去padding
     const maxHeight = 500; // 最大高度
     
     let width = img.width;
     let height = img.height;
     
     // 计算缩放比例，保持宽高比
-    const widthRatio = maxWidth / width;
+    const widthRatio = availableWidth / width;
     const heightRatio = maxHeight / height;
     const scale = Math.min(widthRatio, heightRatio, 1); // 不超过原始尺寸
     
@@ -189,7 +192,22 @@ function displayImage(img) {
     
     // 更新网格
     updateGrid();
+    
+    // 保存原始图片引用，用于窗口大小变化时重新计算
+    window.currentDisplayedImage = img;
+    window.currentDisplayScale = scale;
 }
+
+// 窗口大小变化时重新计算预览
+function handleWindowResize() {
+    if (window.currentDisplayedImage && canvas) {
+        // 重新显示图片以适配新的大小
+        displayImage(window.currentDisplayedImage);
+    }
+}
+
+// 添加窗口大小变化监听
+window.addEventListener('resize', handleWindowResize);
 
 // 更新网格
 function updateGrid() {
