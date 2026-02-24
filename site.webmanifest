@@ -4,6 +4,11 @@
   "description": "专业的图片网格切割工具，由 SOSOMOSS AI 开发",
   "icons": [
     {
+      "src": "/favicon-scissors.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
       "src": "/favicon-32x32.png",
       "sizes": "32x32",
       "type": "image/png"
