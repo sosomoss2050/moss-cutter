@@ -1454,6 +1454,78 @@ footer p {
     margin-right: 8px;
 }
 
+/* Tooltip 样式 */
+[tooltip], [title] {
+    position: relative;
+    cursor: help;
+}
+
+[tooltip]::before,
+[tooltip]::after,
+[title]::before,
+[title]::after {
+    position: absolute;
+    left: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--transition-normal);
+    z-index: 1000;
+}
+
+[tooltip]::before,
+[title]::before {
+    content: attr(title);
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    transform: translateX(-50%) translateY(-10px);
+    bottom: 100%;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow-lg);
+}
+
+[tooltip]::after,
+[title]::after {
+    content: '';
+    border: 6px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.85);
+    transform: translateX(-50%) translateY(-10px);
+    bottom: 100%;
+}
+
+[tooltip]:hover::before,
+[tooltip]:hover::after,
+[title]:hover::before,
+[title]:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* 特定元素的Tooltip优化 */
+.btn[title]::before,
+.btn[title]::after {
+    white-space: normal;
+    max-width: 280px;
+    text-align: center;
+}
+
+.input-group label[title]::before,
+.input-group label[title]::after {
+    white-space: normal;
+    max-width: 240px;
+    text-align: left;
+}
+
+select option[title] {
+    background: var(--bg-color);
+    color: var(--text-primary);
+    padding: 8px 12px;
+}
+
 /* 深色模式支持（未来扩展） */
 @media (prefers-color-scheme: dark) {
     :root {
@@ -1481,5 +1553,16 @@ footer p {
     
     .advanced-description {
         background: rgba(99, 102, 241, 0.1);
+    }
+    
+    [tooltip]::before,
+    [title]::before {
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid #444444;
+    }
+    
+    [tooltip]::after,
+    [title]::after {
+        border-top-color: rgba(30, 30, 30, 0.95);
     }
 }

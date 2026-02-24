@@ -48,22 +48,32 @@
                     <h3><i class="fas fa-th"></i> 网格设置</h3>
                     <div class="grid-inputs">
                         <div class="input-group">
-                            <label for="rows"><i class="fas fa-arrows-alt-v"></i> 行数</label>
-                            <input type="number" id="rows" min="1" max="10" value="3">
+                            <label for="rows" title="网格的行数，决定垂直方向切割多少片">
+                                <i class="fas fa-arrows-alt-v"></i> 行数
+                            </label>
+                            <input type="number" id="rows" min="1" max="10" value="3" 
+                                   title="输入1-10之间的数字，决定垂直方向切割多少片">
                         </div>
                         <div class="input-group">
-                            <label for="cols"><i class="fas fa-arrows-alt-h"></i> 列数</label>
-                            <input type="number" id="cols" min="1" max="10" value="3">
+                            <label for="cols" title="网格的列数，决定水平方向切割多少片">
+                                <i class="fas fa-arrows-alt-h"></i> 列数
+                            </label>
+                            <input type="number" id="cols" min="1" max="10" value="3" 
+                                   title="输入1-10之间的数字，决定水平方向切割多少片">
                         </div>
                     </div>
                     <div class="preset-buttons" id="presetButtons">
                         <!-- 智能推荐按钮将由JavaScript动态生成 -->
-                        <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="smart">
+                        <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="smart" 
+                                title="智能推荐：根据图片尺寸自动计算最佳切割方案">
                             <i class="fas fa-brain"></i> 智能推荐
                         </button>
-                        <button class="btn btn-outline" data-rows="2" data-cols="2" data-type="fixed">2×2</button>
-                        <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="fixed">3×3</button>
-                        <button class="btn btn-outline" data-rows="4" data-cols="4" data-type="fixed">4×4</button>
+                        <button class="btn btn-outline" data-rows="2" data-cols="2" data-type="fixed" 
+                                title="四宫格：简单分割，适合对比展示">2×2</button>
+                        <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="fixed" 
+                                title="九宫格：社交媒体常用，适合拼图分享">3×3</button>
+                        <button class="btn btn-outline" data-rows="4" data-cols="4" data-type="fixed" 
+                                title="十六宫格：精细分割，适合大图处理">4×4</button>
                     </div>
                     
                     <!-- 智能推荐信息 -->
@@ -85,17 +95,20 @@
                             <label style="margin: 0;">
                                 <i class="fas fa-sliders-h"></i> 切割设置
                             </label>
-                            <button id="toggleAdvanced" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;">
+                            <button id="toggleAdvanced" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;" 
+                                    title="显示/隐藏高级切割选项，适合专业用户">
                                 <i class="fas fa-cog"></i> 高级选项
                             </button>
                         </div>
                         
                         <!-- 简单模式（默认显示） -->
                         <div id="simpleMode" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05)); 
-                                                    padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                                    padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);"
+                             title="智能切割模式：自动处理宽高比问题，添加少量白边确保所有切片大小一致">
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                                 <div style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; 
-                                            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">
+                                            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;"
+                                     title="推荐使用">
                                     <i class="fas fa-check"></i>
                                 </div>
                                 <div>
@@ -139,25 +152,32 @@
                         <input type="text" id="fileName" value="cut_images">
                     </div>
                     <div class="input-group">
-                        <label for="imageFormat"><i class="fas fa-file-image"></i> 输出格式</label>
+                        <label for="imageFormat" title="选择输出图片的格式">
+                            <i class="fas fa-file-image"></i> 输出格式
+                        </label>
                         <select id="imageFormat">
-                            <option value="png">PNG (无损)</option>
-                            <option value="jpeg">JPEG (有损)</option>
-                            <option value="webp">WebP (现代)</option>
+                            <option value="png" title="PNG格式：无损压缩，适合包含文字或线条的图片">PNG (无损)</option>
+                            <option value="jpeg" title="JPEG格式：有损压缩，适合照片，文件较小">JPEG (有损)</option>
+                            <option value="webp" title="WebP格式：现代格式，兼顾质量和文件大小">WebP (现代)</option>
                         </select>
                     </div>
                     <div class="quality-control" id="qualityControl" style="display: none;">
-                        <label for="quality"><i class="fas fa-compress-alt"></i> 质量: <span id="qualityValue">85</span>%</label>
-                        <input type="range" id="quality" min="1" max="100" value="85">
+                        <label for="quality" title="JPEG/WebP格式的压缩质量，数字越高质量越好但文件越大">
+                            <i class="fas fa-compress-alt"></i> 质量: <span id="qualityValue">85</span>%
+                        </label>
+                        <input type="range" id="quality" min="1" max="100" value="85" 
+                               title="拖动滑块调整图片质量，1%最低质量，100%最高质量">
                     </div>
                 </div>
             </div>
 
             <div class="action-section">
-                <button class="btn btn-success btn-large" id="cutBtn" disabled>
+                <button class="btn btn-success btn-large" id="cutBtn" disabled
+                        title="开始切割图片，处理时间取决于图片大小和网格数量">
                     <i class="fas fa-cut"></i> 开始切割图片
                 </button>
-                <button class="btn btn-secondary btn-large" id="resetBtn">
+                <button class="btn btn-secondary btn-large" id="resetBtn"
+                        title="重置所有设置，清空已上传的图片">
                     <i class="fas fa-redo"></i> 重置
                 </button>
             </div>
@@ -179,13 +199,13 @@
                 <!-- 预览网格区域 -->
                 <div class="preview-controls">
                     <div class="preview-actions">
-                        <button class="btn btn-outline" id="selectAllBtn">
+                        <button class="btn btn-outline" id="selectAllBtn" title="选中所有预览图片">
                             <i class="fas fa-check-square"></i> 全选
                         </button>
-                        <button class="btn btn-outline" id="deselectAllBtn">
+                        <button class="btn btn-outline" id="deselectAllBtn" title="取消选中所有图片">
                             <i class="fas fa-square"></i> 取消全选
                         </button>
-                        <button class="btn btn-primary" id="downloadSelectedBtn">
+                        <button class="btn btn-primary" id="downloadSelectedBtn" title="下载选中的图片（支持多选）">
                             <i class="fas fa-download"></i> 下载选中图片
                         </button>
                     </div>
@@ -200,7 +220,8 @@
                 <!-- 原有ZIP下载功能 -->
                 <div class="zip-download-section">
                     <div class="grid-preview" id="gridPreview"></div>
-                    <button class="btn btn-primary btn-large" id="downloadBtn">
+                    <button class="btn btn-primary btn-large" id="downloadBtn"
+                            title="下载包含所有切片的ZIP压缩包">
                         <i class="fas fa-file-archive"></i> 下载 ZIP 压缩包
                     </button>
                     <p class="download-info">包含 <span id="pieceCount">0</span> 张图片片段</p>
