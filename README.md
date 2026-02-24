@@ -27,12 +27,12 @@
 ## 🚀 快速开始
 
 ### 在线使用
-访问 [GitHub Pages](https://sosomoss.github.io/moss-cutter/) (部署后)
+访问 [GitHub Pages](https://sosomoss2050.github.io/moss-cutter/) 
 
 ### 本地运行
 ```bash
 # 克隆仓库
-git clone https://github.com/sosomoss/moss-cutter.git
+git clone https://github.com/sosomoss2050/moss-cutter.git
 cd moss-cutter
 
 # 方法1: 使用Python (推荐)
@@ -139,9 +139,9 @@ npm run dev
 
 **SOSOMOSS LTD.** - AI工具开发团队
 
-- 网站: [sosomoss.com](https://sosomoss.com) (示例)
-- GitHub: [@sosomoss](https://github.com/sosomoss)
-- 邮箱: contact@sosomoss.com
+- 网站: [sosomoss.net](https://sosomoss.net) 
+- GitHub: [@sosomoss2050](https://github.com/sosomoss2050)
+- 邮箱: 10000@sosomoss.net
 
 ## 🙏 致谢
 
@@ -152,7 +152,7 @@ npm run dev
 
 ## 📞 支持
 
-- 🐛 **报告问题**: [GitHub Issues](https://github.com/sosomoss/moss-cutter/issues)
+- 🐛 **报告问题**: [GitHub Issues](https://github.com/sosomoss2050/moss-cutter/issues)
 - 💡 **功能建议**: 通过Issues提交
 - ❓ **使用帮助**: 查看本文档或提交Issue
 
@@ -187,7 +187,7 @@ Intelligent Image Grid Cutting Tool - Cut images into grids (9-grid, 4-grid, etc
 
 ### Quick Start
 ```bash
-git clone https://github.com/sosomoss/moss-cutter.git
+git clone https://github.com/sosomoss2050/moss-cutter.git
 cd moss-cutter
 python start_server.py
 # Open http://localhost:8000
