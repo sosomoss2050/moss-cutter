@@ -234,18 +234,27 @@ header h1 i {
 
 .preview-container {
     position: relative;
-    max-width: 600px;
+    max-width: 100%;
     margin: 20px auto;
     border: 2px solid #e2e8f0;
     border-radius: 10px;
     overflow: hidden;
     background: #f8f9fa;
+    /* 容器根据内容自适应 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
 }
 
 #previewCanvas {
     display: block;
     max-width: 100%;
+    max-height: 500px; /* 限制最大高度 */
+    width: auto;
     height: auto;
+    /* 保持图片原始宽高比 */
+    object-fit: contain;
 }
 
 .grid-overlay {

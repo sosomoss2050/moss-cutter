@@ -153,28 +153,27 @@ function loadImage(file) {
 
 // 显示图片
 function displayImage(img) {
-    // 设置画布尺寸
-    const maxWidth = 600;
-    const maxHeight = 400;
+    // 设置画布尺寸 - 自适应容器
+    const container = canvas.parentElement;
+    const maxWidth = container.clientWidth - 4; // 减去边框
+    const maxHeight = 500; // 最大高度
     
     let width = img.width;
     let height = img.height;
     
-    // 保持宽高比缩放
-    if (width > maxWidth) {
-        height = (maxWidth / width) * height;
-        width = maxWidth;
-    }
+    // 计算缩放比例，保持宽高比
+    const widthRatio = maxWidth / width;
+    const heightRatio = maxHeight / height;
+    const scale = Math.min(widthRatio, heightRatio, 1); // 不超过原始尺寸
     
-    if (height > maxHeight) {
-        width = (maxHeight / height) * width;
-        height = maxHeight;
-    }
+    width = Math.floor(width * scale);
+    height = Math.floor(height * scale);
     
+    // 设置画布尺寸
     canvas.width = width;
     canvas.height = height;
     
-    // 绘制图片
+    // 绘制图片（居中绘制，因为容器是flex布局）
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, width, height);
     
@@ -182,7 +181,8 @@ function displayImage(img) {
     previewSection.style.display = 'block';
     
     // 更新图片信息
-    imageInfo.textContent = `尺寸: ${img.width} × ${img.height} | 格式: ${img.src.split(';')[0].split('/')[1]}`;
+    const scalePercent = (scale * 100).toFixed(1);
+    imageInfo.textContent = `原始尺寸: ${img.width} × ${img.height} | 预览缩放: ${scalePercent}% (${width} × ${height}) | 格式: ${img.src.split(';')[0].split('/')[1]}`;
     
     // 显示智能推荐
     showSmartRecommendations(img.width, img.height);
