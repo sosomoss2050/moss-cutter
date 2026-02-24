@@ -181,6 +181,32 @@ header h1 i {
     opacity: 1;
 }
 
+/* 点击反馈效果 */
+.upload-area:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-dark);
+}
+
+.upload-area.click-feedback {
+    animation: clickPulse 0.3s ease;
+}
+
+@keyframes clickPulse {
+    0% {
+        transform: scale(0.98);
+        box-shadow: var(--shadow-sm);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-lg);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: var(--shadow-md);
+    }
+}
+
 .upload-area.drag-over {
     border-color: var(--success-color);
     background: rgba(16, 185, 129, 0.05);
@@ -224,6 +250,28 @@ header h1 i {
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
+    line-height: 1.6;
+}
+
+.hint-text {
+    color: var(--primary-color);
+    font-weight: 600;
+    background: rgba(99, 102, 241, 0.1);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    display: inline-block;
+    margin-left: 4px;
+    animation: hintPulse 2s infinite;
+}
+
+@keyframes hintPulse {
+    0%, 100% {
+        background: rgba(99, 102, 241, 0.1);
+    }
+    50% {
+        background: rgba(99, 102, 241, 0.2);
+    }
 }
 }
 

@@ -47,6 +47,19 @@ function init() {
     
     // 事件监听器
     selectFileBtn.addEventListener('click', () => fileInput.click());
+    // 整个上传区域都可以点击触发文件选择
+    uploadArea.addEventListener('click', (e) => {
+        // 防止按钮点击事件冒泡导致重复触发
+        if (e.target !== selectFileBtn && !selectFileBtn.contains(e.target)) {
+            // 添加点击反馈
+            uploadArea.classList.add('click-feedback');
+            setTimeout(() => {
+                uploadArea.classList.remove('click-feedback');
+            }, 300);
+            
+            fileInput.click();
+        }
+    });
     fileInput.addEventListener('change', handleFileSelect);
     
     // 拖放功能
