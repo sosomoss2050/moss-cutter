@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MossCutter 调试测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .debug-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #e11d48;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-area {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .test-button {
+            padding: 12px 24px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: #2563eb;
+        }
+        
+        .test-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .console {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .console-line {
+            margin: 5px 0;
+            padding: 5px 10px;
+            border-left: 3px solid transparent;
+        }
+        
+        .console-line.info {
+            border-left-color: #3b82f6;
+            color: #93c5fd;
+        }
+        
+        .console-line.success {
+            border-left-color: #10b981;
+            color: #a7f3d0;
+        }
+        
+        .console-line.error {
+            border-left-color: #ef4444;
+            color: #fca5a5;
+        }
+        
+        .console-line.warning {
+            border-left-color: #f59e0b;
+            color: #fde68a;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🛠️ MossCutter 实时调试测试</h1>
+        
+        <div class="test-area">
+            <h3>测试1: 检查JavaScript错误</h3>
+            <button class="test-button" onclick="checkForErrors()">检查错误</button>
+            <button class="test-button" onclick="clearConsole()">清空控制台</button>
+        </div>
+        
+        <div class="test-area">
+            <h3>测试2: 模拟用户操作</h3>
+            <button class="test-button" onclick="simulateUpload()">模拟上传图片</button>
+            <button class="test-button" onclick="simulateGridChange()">模拟网格变化</button>
+            <button class="test-button" onclick="simulateCut()">模拟切割</button>
+        </div>
+        
+        <div class="test-area">
+            <h3>测试3: 检查功能状态</h3>
+            <button class="test-button" onclick="checkButtonStates()">检查按钮状态</button>
+            <button class="test-button" onclick="checkEventListeners()">检查事件监听</button>
+            <button class="test-button" onclick="checkVariables()">检查变量</button>
+        </div>
+        
+        <div class="console" id="console">
+            <div class="console-line info">控制台已就绪。点击上方按钮开始测试。</div>
+            <div class="console-line info">当前时间: <span id="currentTime"></span></div>
+        </div>
+    </div>
+    
+    <script>
+        const consoleElement = document.getElementById('console');
+        const currentTimeElement = document.getElementById('currentTime');
+        
+        // 更新时间
+        function updateTime() {
+            currentTimeElement.textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // 日志函数
+        function log(type, message) {
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleElement.appendChild(line);
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+        }
+        
+        function clearConsole() {
+            consoleElement.innerHTML = '';
+            log('info', '控制台已清空');
+        }
+        
+        // 测试函数
+        function checkForErrors() {
+            log('info', '开始检查JavaScript错误...');
+            
+            // 检查全局错误
+            window.onerror = function(msg, url, line, col, error) {
+                log('error', `全局错误: ${msg} (${url}:${line}:${col})`);
+                return false;
+            };
+            
+            // 检查未捕获的Promise错误
+            window.addEventListener('unhandledrejection', function(event) {
+                log('error', `Promise错误: ${event.reason}`);
+            });
+            
+            // 尝试执行一些代码来触发错误
+            try {
+                // 检查重复变量
+                log('info', '检查变量声明...');
+                
+                // 检查主脚本是否加载
+                const mainScript = document.querySelector('script[src*="script.js"]');
+                if (mainScript) {
+                    log('success', '主脚本已加载');
+                } else {
+                    log('error', '主脚本未找到');
+                }
+                
+                // 检查外部库
+                if (typeof JSZip !== 'undefined') {
+                    log('success', 'JSZip库已加载');
+                } else {
+                    log('warning', 'JSZip库未加载（可能还在加载中）');
+                }
+                
+                log('success', '基本检查完成');
+                
+            } catch (error) {
+                log('error', `检查过程中出错: ${error.message}`);
+            }
+        }
+        
+        function simulateUpload() {
+            log('info', '模拟上传图片...');
+            
+            try {
+                // 检查上传相关元素
+                const fileInput = document.getElementById('fileInput');
+                const selectFileBtn = document.getElementById('selectFileBtn');
+                const uploadArea = document.getElementById('uploadArea');
+                
+                if (fileInput && selectFileBtn && uploadArea) {
+                    log('success', '上传相关元素存在');
+                    
+                    // 检查事件监听器
+                    if (selectFileBtn.onclick || selectFileBtn.hasAttribute('onclick')) {
+                        log('success', '选择文件按钮有点击事件');
+                    } else {
+                        log('warning', '选择文件按钮没有点击事件（可能通过addEventListener添加）');
+                    }
+                    
+                    // 模拟点击选择文件按钮
+                    log('info', '模拟点击选择文件按钮...');
+                    selectFileBtn.click();
+                    
+                } else {
+                    log('error', '上传相关元素缺失');
+                    if (!fileInput) log('error', 'fileInput 未找到');
+                    if (!selectFileBtn) log('error', 'selectFileBtn 未找到');
+                    if (!uploadArea) log('error', 'uploadArea 未找到');
+                }
+                
+            } catch (error) {
+                log('error', `模拟上传失败: ${error.message}`);
+            }
+        }
+        
+        function simulateGridChange() {
+            log('info', '模拟网格设置变化...');
+            
+            try {
+                const rowsInput = document.getElementById('rows');
+                const colsInput = document.getElementById('cols');
+                const presetButtons = document.querySelectorAll('.preset-buttons .btn');
+                
+                if (rowsInput && colsInput) {
+                    log('success', '网格输入框存在');
+                    
+                    // 测试输入框
+                    rowsInput.value = 4;
+                    colsInput.value = 4;
+                    
+                    // 触发input事件
+                    rowsInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    colsInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    
+                    log('info', `设置网格为: ${rowsInput.value}×${colsInput.value}`);
+                    
+                } else {
+                    log('error', '网格输入框缺失');
+                }
+                
+                if (presetButtons.length > 0) {
+                    log('success', `找到 ${presetButtons.length} 个预设按钮`);
+                    
+                    // 测试第一个预设按钮
+                    const firstButton = presetButtons[0];
+                    log('info', `测试预设按钮: ${firstButton.textContent.trim()}`);
+                    
+                } else {
+                    log('warning', '未找到预设按钮');
+                }
+                
+            } catch (error) {
+                log('error', `模拟网格变化失败: ${error.message}`);
+            }
+        }
+        
+        function simulateCut() {
+            log('info', '模拟切割操作...');
+            
+            try {
+                const cutBtn = document.getElementById('cutBtn');
+                
+                if (cutBtn) {
+                    log('success', '切割按钮存在');
+                    
+                    if (cutBtn.disabled) {
+                        log('warning', '切割按钮当前禁用（需要先上传图片）');
+                    } else {
+                        log('info', '切割按钮已启用，模拟点击...');
+                        cutBtn.click();
+                    }
+                    
+                } else {
+                    log('error', '切割按钮未找到');
+                }
+                
+            } catch (error) {
+                log('error', `模拟切割失败: ${error.message}`);
+            }
+        }
+        
+        function checkButtonStates() {
+            log('info', '检查按钮状态...');
+            
+            const buttonsToCheck = [
+                'selectFileBtn', 'cutBtn', 'resetBtn', 
+                'toggleAdvanced', 'downloadBtn'
+            ];
+            
+            buttonsToCheck.forEach(buttonId => {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    const state = button.disabled ? '禁用' : '启用';
+                    const color = button.disabled ? 'warning' : 'success';
+                    log(color, `${buttonId}: ${state} (${button.textContent.trim()})`);
+                } else {
+                    log('error', `${buttonId}: 未找到`);
+                }
+            });
+        }
+        
+        function checkEventListeners() {
+            log('info', '检查事件监听器（通过模拟操作）...');
+            
+            // 这个方法无法直接获取事件监听器列表
+            // 但我们可以检查元素是否有相应的事件属性
+            const elementsToCheck = [
+                { id: 'selectFileBtn', event: 'onclick' },
+                { id: 'cutBtn', event: 'onclick' },
+                { id: 'resetBtn', event: 'onclick' },
+                { id: 'rows', event: 'oninput' },
+                { id: 'cols', event: 'oninput' }
+            ];
+            
+            elementsToCheck.forEach(item => {
+                const element = document.getElementById(item.id);
+                if (element) {
+                    const hasDirectHandler = element[item.event] !== null;
+                    log('info', `${item.id}: 元素存在${hasDirectHandler ? '，有直接事件处理' : '，无直接事件处理（可能通过addEventListener）'}`);
+                } else {
+                    log('error', `${item.id}: 元素未找到`);
+                }
+            });
+        }
+        
+        function checkVariables() {
+            log('info', '检查全局变量...');
+            
+            // 检查MossCutter的主要变量
+            const mossVars = [
+                'originalImage', 'canvas', 'ctx', 'gridOverlay',
+                'currentRows', 'currentCols'
+            ];
+            
+            mossVars.forEach(varName => {
+                try {
+                    if (window[varName] !== undefined) {
+                        const type = typeof window[varName];
+                        const value = window[varName] === null ? 'null' : 
+                                     window[varName] === undefined ? 'undefined' : 
+                                     type === 'object' ? 'object' : window[varName];
+                        log('success', `${varName}: ${type} = ${value}`);
+                    } else {
+                        log('warning', `${varName}: 未定义`);
+                    }
+                } catch (error) {
+                    log('error', `${varName}: 检查失败 - ${error.message}`);
+                }
+            });
+        }
+        
+        // 页面加载时自动运行基本检查
+        window.addEventListener('DOMContentLoaded', () => {
+            log('info', '页面加载完成，开始自动检查...');
+            setTimeout(checkForErrors, 500);
+            setTimeout(checkButtonStates, 1000);
+        });
+        
+        // 捕获控制台输出
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            log('info', args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            log('error', args.join(' '));
+        };
+        
+        console.warn = function(...args) {
+            originalConsoleWarn.apply(console, args);
+            log('warning', args.join(' '));
+        };
+    </script>
+</body>
+</html>
