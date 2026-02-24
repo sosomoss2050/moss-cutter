@@ -4,7 +4,7 @@
 
 ![MossCutter Logo](https://img.shields.io/badge/MossCutter-图片网格切割工具-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-1.1.4-orange)
+![Version](https://img.shields.io/badge/version-1.1.5-orange)
 ![Stable](https://img.shields.io/badge/稳定版-✅-brightgreen)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
 
@@ -16,7 +16,8 @@
 
 ## 🌟 特性
 
-### v1.1.4 稳定版本 ✅
+### v1.1.5 稳定版本 ✅
+- 🎯 **用户体验优化** - 整个上传区域都可以点击，操作更便利
 - ✅ **功能完整** - 所有按钮功能正常，用户体验流畅
 - 🐛 **Bug修复** - 修复状态同步问题，提升稳定性
 - 🔄 **状态管理** - 切割后自动启用所有控制按钮
