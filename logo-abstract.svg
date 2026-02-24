@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48" height="48">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景圆形 -->
+  <circle cx="50" cy="50" r="40" fill="url(#logoGradient)" />
+  
+  <!-- 抽象的小龙虾符号 -->
+  <g fill="#ffffff" stroke="none">
+    <!-- 身体（V形，象征钳子） -->
+    <path d="M40,60 L50,40 L60,60 Z" />
+    
+    <!-- 剪刀符号叠加 -->
+    <g transform="translate(50,50)">
+      <!-- 交叉的剪刀 -->
+      <line x1="-8" y1="-8" x2="8" y2="8" stroke="#ffffff" stroke-width="3" />
+      <line x1="-8" y1="8" x2="8" y2="-8" stroke="#ffffff" stroke-width="3" />
+      
+      <!-- 中心圆点 -->
+      <circle cx="0" cy="0" r="3" fill="#4f46e5" />
+    </g>
+    
+    <!-- 网格点阵 -->
+    <g transform="translate(30,30)" opacity="0.8">
+      <circle cx="0" cy="0" r="1.5" />
+      <circle cx="5" cy="0" r="1.5" />
+      <circle cx="10" cy="0" r="1.5" />
+      <circle cx="0" cy="5" r="1.5" />
+      <circle cx="5" cy="5" r="1.5" />
+      <circle cx="10" cy="5" r="1.5" />
+      <circle cx="0" cy="10" r="1.5" />
+      <circle cx="5" cy="10" r="1.5" />
+      <circle cx="10" cy="10" r="1.5" />
+    </g>
+  </g>
+</svg>

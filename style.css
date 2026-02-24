@@ -279,8 +279,8 @@ header h1 i {
 }
 
 .logo-svg {
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     vertical-align: middle;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     transition: transform 0.3s ease;
