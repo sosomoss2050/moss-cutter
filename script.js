@@ -1082,7 +1082,7 @@ function resetTool() {
 }
 
 // 生成默认ZIP文件名：MossCutYYYYMMDDXXX
-// 生成默认ZIP文件名：MossCutYYYYMMDDHHMMSS
+// 生成默认ZIP文件名：MCutYYYYMMDDHHMMSS
 function generateDefaultZipName() {
     const now = new Date();
     const year = now.getFullYear();
@@ -1092,7 +1092,7 @@ function generateDefaultZipName() {
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
     
-    return `MossCut${year}${month}${day}${hours}${minutes}${seconds}`;
+    return `MCut${year}${month}${day}${hours}${minutes}${seconds}`;
 }
 
 // 页面加载完成后初始化
