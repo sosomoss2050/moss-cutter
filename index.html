@@ -56,11 +56,27 @@
                             <input type="number" id="cols" min="1" max="10" value="3">
                         </div>
                     </div>
-                    <div class="preset-buttons">
-                        <button class="btn btn-outline" data-rows="2" data-cols="2">2×2 (四宫格)</button>
-                        <button class="btn btn-outline" data-rows="3" data-cols="3">3×3 (九宫格)</button>
-                        <button class="btn btn-outline" data-rows="4" data-cols="4">4×4 (十六宫格)</button>
-                        <button class="btn btn-outline" data-rows="3" data-cols="4">3×4 (十二宫格)</button>
+                    <div class="preset-buttons" id="presetButtons">
+                        <!-- 智能推荐按钮将由JavaScript动态生成 -->
+                        <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="smart">
+                            <i class="fas fa-brain"></i> 智能推荐
+                        </button>
+                        <button class="btn btn-outline" data-rows="2" data-cols="2" data-type="fixed">2×2</button>
+                        <button class="btn btn-outline" data-rows="3" data-cols="3" data-type="fixed">3×3</button>
+                        <button class="btn btn-outline" data-rows="4" data-cols="4" data-type="fixed">4×4</button>
+                    </div>
+                    
+                    <!-- 智能推荐信息 -->
+                    <div id="smartRecommendation" style="display: none; margin-top: 16px;">
+                        <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1)); 
+                                    padding: 12px; border-radius: 8px; border-left: 4px solid #6366f1;">
+                            <strong style="color: #4f46e5;">
+                                <i class="fas fa-lightbulb"></i> 智能推荐
+                            </strong>
+                            <div id="recommendationDetails" style="margin-top: 8px; font-size: 0.9rem;">
+                                <!-- 推荐详情将由JavaScript填充 -->
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- 切割模式选择 -->

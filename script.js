@@ -24,6 +24,9 @@ const qualityValue = document.getElementById('qualityValue');
 const fileNameInput = document.getElementById('fileName');
 const cuttingModeSelect = document.getElementById('cuttingMode');
 const modeDescription = document.getElementById('modeDescription');
+const presetButtons = document.querySelectorAll('.preset-buttons .btn');
+const smartRecommendation = document.getElementById('smartRecommendation');
+const recommendationDetails = document.getElementById('recommendationDetails');
 const cutBtn = document.getElementById('cutBtn');
 const resetBtn = document.getElementById('resetBtn');
 const progressSection = document.getElementById('progressSection');
@@ -175,6 +178,9 @@ function displayImage(img) {
     
     // 更新图片信息
     imageInfo.textContent = `尺寸: ${img.width} × ${img.height} | 格式: ${img.src.split(';')[0].split('/')[1]}`;
+    
+    // 显示智能推荐
+    showSmartRecommendations(img.width, img.height);
     
     // 更新网格
     updateGrid();
@@ -431,6 +437,148 @@ async function downloadZip() {
         alert('下载失败，请重试');
         progressSection.style.display = 'none';
     }
+}
+
+// 智能推荐切割方案
+function recommendCuttingOptions(width, height) {
+    const recommendations = [];
+    
+    // 计算宽高比
+    const aspectRatio = width / height;
+    const isLandscape = aspectRatio >= 1; // 横屏
+    const isPortrait = aspectRatio < 1;   // 竖屏
+    
+    // 推荐1：基于总像素数（目标：每个切片约50-200万像素）
+    const totalPixels = width * height;
+    const targetPixelsPerPiece = 1000000; // 100万像素/切片
+    
+    let recommendedPieces = Math.round(totalPixels / targetPixelsPerPiece);
+    recommendedPieces = Math.max(4, Math.min(36, recommendedPieces)); // 限制在4-36片
+    
+    // 根据宽高比分配行列
+    let recRows, recCols;
+    if (isLandscape) {
+        recCols = Math.round(Math.sqrt(recommendedPieces * aspectRatio));
+        recRows = Math.round(recommendedPieces / recCols);
+    } else {
+        recRows = Math.round(Math.sqrt(recommendedPieces / aspectRatio));
+        recCols = Math.round(recommendedPieces / recRows);
+    }
+    
+    // 确保行列数合理
+    recRows = Math.max(2, Math.min(10, recRows));
+    recCols = Math.max(2, Math.min(10, recCols));
+    
+    recommendations.push({
+        name: '智能推荐',
+        rows: recRows,
+        cols: recCols,
+        pieces: recRows * recCols,
+        reason: `基于图片尺寸 (${width}×${height}) 自动计算`,
+        type: 'smart'
+    });
+    
+    // 推荐2：社交媒体常用（Instagram九宫格）
+    recommendations.push({
+        name: '九宫格',
+        rows: 3,
+        cols: 3,
+        pieces: 9,
+        reason: '社交媒体常用，适合拼图分享',
+        type: 'social'
+    });
+    
+    // 推荐3：根据宽高比推荐
+    if (aspectRatio > 1.5) { // 很宽的图片
+        recommendations.push({
+            name: '宽屏适配',
+            rows: 2,
+            cols: 4,
+            pieces: 8,
+            reason: '适合宽屏图片，保持比例',
+            type: 'wide'
+        });
+    } else if (aspectRatio < 0.67) { // 很长的图片
+        recommendations.push({
+            name: '竖屏适配',
+            rows: 4,
+            cols: 2,
+            pieces: 8,
+            reason: '适合竖屏图片，保持比例',
+            type: 'tall'
+        });
+    }
+    
+    // 推荐4：标准网格
+    recommendations.push({
+        name: '标准网格',
+        rows: 4,
+        cols: 4,
+        pieces: 16,
+        reason: '标准网格，适合中等尺寸图片',
+        type: 'standard'
+    });
+    
+    return recommendations;
+}
+
+// 显示智能推荐
+function showSmartRecommendations(width, height) {
+    const recommendations = recommendCuttingOptions(width, height);
+    
+    // 更新智能推荐按钮
+    const smartBtn = document.querySelector('[data-type="smart"]');
+    if (smartBtn && recommendations[0]) {
+        const rec = recommendations[0];
+        smartBtn.innerHTML = `<i class="fas fa-brain"></i> ${rec.rows}×${rec.cols}`;
+        smartBtn.dataset.rows = rec.rows;
+        smartBtn.dataset.cols = rec.cols;
+    }
+    
+    // 显示推荐详情
+    let detailsHTML = '';
+    recommendations.forEach((rec, index) => {
+        const isActive = index === 0 ? 'style="background: rgba(99, 102, 241, 0.1);"' : '';
+        detailsHTML += `
+            <div ${isActive} style="padding: 8px 12px; margin: 4px 0; border-radius: 6px; cursor: pointer;"
+                 onclick="applyRecommendation(${rec.rows}, ${rec.cols})">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>${rec.name}</strong> (${rec.rows}×${rec.cols})
+                        <div style="font-size: 0.85rem; color: #6b7280; margin-top: 2px;">
+                            ${rec.reason}
+                        </div>
+                    </div>
+                    <span style="background: #6366f1; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.85rem;">
+                        ${rec.pieces}片
+                    </span>
+                </div>
+            </div>
+        `;
+    });
+    
+    recommendationDetails.innerHTML = detailsHTML;
+    smartRecommendation.style.display = 'block';
+}
+
+// 应用推荐
+function applyRecommendation(rows, cols) {
+    rowsInput.value = rows;
+    colsInput.value = cols;
+    updateGrid();
+    
+    // 高亮显示当前选择
+    const recommendationDivs = recommendationDetails.querySelectorAll('div');
+    recommendationDivs.forEach(div => {
+        const text = div.textContent;
+        if (text.includes(`${rows}×${cols}`)) {
+            div.style.background = 'rgba(99, 102, 241, 0.15)';
+            div.style.border = '1px solid #6366f1';
+        } else {
+            div.style.background = '';
+            div.style.border = 'none';
+        }
+    });
 }
 
 // 更新切割模式描述
