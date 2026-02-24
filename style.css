@@ -717,9 +717,19 @@ header h1 i {
     margin-top: 8px;
 }
 
+/* 智能推荐按钮占满一行 */
+.preset-buttons .btn-outline[data-type="smart"] {
+    grid-column: 1 / -1; /* 跨越所有列 */
+    text-align: center;
+}
+
 @media (max-width: 480px) {
     .preset-buttons {
         grid-template-columns: 1fr;
+    }
+    
+    .preset-buttons .btn-outline[data-type="smart"] {
+        grid-column: 1; /* 移动端不需要特殊处理 */
     }
 }
 
