@@ -153,49 +153,59 @@ function loadImage(file) {
 
 // 显示图片
 function displayImage(img) {
-    // 设置画布尺寸 - 自适应可用空间
-    const previewContainer = canvas.parentElement;
-    const previewSectionElement = previewContainer.parentElement;
-    
-    // 获取实际可用宽度（考虑padding和边框）
-    const availableWidth = previewSectionElement.clientWidth - 40; // 减去padding
-    const maxHeight = 500; // 最大高度
-    
-    let width = img.width;
-    let height = img.height;
-    
-    // 计算缩放比例，保持宽高比
-    const widthRatio = availableWidth / width;
-    const heightRatio = maxHeight / height;
-    const scale = Math.min(widthRatio, heightRatio, 1); // 不超过原始尺寸
-    
-    width = Math.floor(width * scale);
-    height = Math.floor(height * scale);
-    
-    // 设置画布尺寸
-    canvas.width = width;
-    canvas.height = height;
-    
-    // 绘制图片（居中绘制，因为容器是flex布局）
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, width, height);
-    
-    // 显示预览区域
+    // 先显示预览区域
     previewSection.style.display = 'block';
     
-    // 更新图片信息
-    const scalePercent = (scale * 100).toFixed(1);
-    imageInfo.textContent = `原始尺寸: ${img.width} × ${img.height} | 预览缩放: ${scalePercent}% (${width} × ${height}) | 格式: ${img.src.split(';')[0].split('/')[1]}`;
-    
-    // 显示智能推荐
-    showSmartRecommendations(img.width, img.height);
-    
-    // 更新网格
-    updateGrid();
-    
-    // 保存原始图片引用，用于窗口大小变化时重新计算
-    window.currentDisplayedImage = img;
-    window.currentDisplayScale = scale;
+    // 使用setTimeout确保DOM已渲染，可以获取正确的宽度
+    setTimeout(() => {
+        // 设置画布尺寸 - 使用可靠的方法获取可用宽度
+        const previewContainer = canvas.parentElement;
+        
+        // 方法1：使用父容器的宽度（更可靠）
+        const container = document.querySelector('.container');
+        let availableWidth = container ? container.clientWidth - 80 : 600; // 减去左右padding
+        
+        // 方法2：使用窗口宽度作为后备
+        if (availableWidth < 300) {
+            availableWidth = Math.min(800, window.innerWidth - 100);
+        }
+        
+        const maxHeight = 500; // 最大高度
+        
+        let width = img.width;
+        let height = img.height;
+        
+        // 计算缩放比例，保持宽高比
+        const widthRatio = availableWidth / width;
+        const heightRatio = maxHeight / height;
+        const scale = Math.min(widthRatio, heightRatio, 1); // 不超过原始尺寸
+        
+        width = Math.floor(width * scale);
+        height = Math.floor(height * scale);
+        
+        // 设置画布尺寸
+        canvas.width = width;
+        canvas.height = height;
+        
+        // 绘制图片
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // 更新图片信息
+        const scalePercent = (scale * 100).toFixed(1);
+        imageInfo.textContent = `原始尺寸: ${img.width} × ${img.height} | 预览缩放: ${scalePercent}% (${width} × ${height}) | 格式: ${img.src.split(';')[0].split('/')[1]}`;
+        
+        // 显示智能推荐
+        showSmartRecommendations(img.width, img.height);
+        
+        // 更新网格
+        updateGrid();
+        
+        // 保存原始图片引用，用于窗口大小变化时重新计算
+        window.currentDisplayedImage = img;
+        window.currentDisplayScale = scale;
+        
+    }, 50); // 50ms延迟确保渲染完成
 }
 
 // 窗口大小变化时重新计算预览
